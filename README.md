@@ -18,6 +18,12 @@ Every unit has:
 
 There are also **mixed-review quizzes** for each subject and each whole grade, **learner profiles** (one per child), and a **My Progress** page with stars and best scores. Progress is saved in the browser's local storage.
 
+## Current focus: Grade 3 Reading Unit 1
+
+`data/grade3-unit1.js` adds a **Reading Unit 1** section to the top of Grade 3 and features it on the home page. It covers every skill on the Unit 1 assessment: long vowel spellings, soft g/c, words ending in -le/-el/-al/-il, silent letters (ph, mb, kn, wr, wh), compound words, synonyms and antonyms, shades of meaning, and plurals. It includes a 30-question **Unit 1 Practice Test**.
+
+To feature the next unit, copy that file, change the content, add a `<script>` tag for it in `index.html`, and set `focus` on the grade to point at the new section.
+
 ## Running it
 
 No build step and no dependencies. Open `index.html` in a browser, or serve the folder:

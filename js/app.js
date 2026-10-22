@@ -72,6 +72,23 @@
     window.scrollTo(0, 0);
   }
 
+  // Highlights the unit a grade is currently studying in school (set via `focus` in the grade data).
+  function focusBanner(g) {
+    const f = C[g] && C[g].focus;
+    const s = f && findSubject(g, f.subject);
+    if (!s) return "";
+    const tried = s.units.filter((u) => bestFor(`${g}/${s.id}/${u.id}`) != null).length;
+    return `<section class="card focus">
+      <div class="focus-tag">⭐ Grade ${g}: what we're studying now</div>
+      <h2>${esc(f.label)}</h2>
+      <p>${s.units.length} skills to practice · ${tried} tried so far</p>
+      <div class="btn-row">
+        <a class="btn" href="#/grade/${g}/${s.id}">📖 Study the skills</a>
+        <a class="btn secondary" href="#/quiz/${g}/${s.id}/all">${esc(s.reviewLabel || "🎯 Mixed review")}</a>
+      </div>
+    </section>`;
+  }
+
   // ---------- views ----------
   function viewHome() {
     const cards = GRADES.map((g) => {
@@ -87,6 +104,7 @@
         <h1>Hi, ${esc(store.current)}! What are we learning today?</h1>
         <p>Pick a grade to see every unit in Math, English, Science, and History &amp; Social Science, based on the Virginia Standards of Learning (SOL). Read the study guide, flip the vocabulary cards, then take the quiz to earn stars.</p>
       </section>
+      ${GRADES.map(focusBanner).join("")}
       <div class="grid">${cards}</div>
       <h2>How it works</h2>
       <div class="grid">
@@ -113,6 +131,7 @@
       ${crumbs([["Home", "#/"], [`Grade ${g}`]])}
       <h1>Grade ${g}: ${esc(d.title)}</h1>
       <p class="muted">${esc(d.intro)}</p>
+      ${focusBanner(g)}
       <div class="grid">${cards}</div>
       <div class="btn-row"><a class="btn" href="#/quiz/${g}/all/all">🎯 Mixed review: all subjects</a></div>`);
   }
@@ -139,7 +158,7 @@
       <h1>${s.icon} Grade ${g} ${esc(s.name)}</h1>
       <p class="muted">${esc(s.about || "")} <span class="tag">${esc(s.standards)}</span></p>
       <ul class="unit-list">${rows}</ul>
-      <div class="btn-row"><a class="btn" href="#/quiz/${g}/${sid}/all">🎯 Mixed review: all ${esc(s.name)} units</a></div>`);
+      <div class="btn-row"><a class="btn" href="#/quiz/${g}/${sid}/all">${esc(s.reviewLabel || `🎯 Mixed review: all ${s.name} units`)}</a></div>`);
   }
 
   function viewLearn(g, sid, uid) {
@@ -197,8 +216,10 @@
     }
     const s = findSubject(g, sid);
     if (uid === "all") {
-      const picks = shuffle(s.units).flatMap((u) => shuffle(unitPool(u, 2)).slice(0, 2));
-      return shuffle(picks).slice(0, 15);
+      const size = s.reviewSize || 15;
+      const per = Math.ceil(size / s.units.length);
+      const picks = shuffle(s.units).flatMap((u) => shuffle(unitPool(u, per)).slice(0, per));
+      return shuffle(picks).slice(0, size);
     }
     const u = findUnit(g, sid, uid);
     // Units with generators keep at least 3 freshly generated problems per quiz.
