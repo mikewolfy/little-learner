@@ -263,3 +263,54 @@ table.prog th, table.prog td { text-align: left; padding: 8px 6px; border-bottom
 .passage-panel .passage { max-height: 46vh; overflow-y: auto; margin-bottom: 4px; }
 .passage-panel .speak { margin: 0 0 4px; }
 @media (max-width: 560px) { .passage { font-size: 1rem; padding: 12px 14px; } .passage-panel .passage { max-height: 34vh; } }
+
+/* ---------- Math worksheets ---------- */
+.print-only { display: none; }
+.worksheet { max-width: 900px; margin: 0 auto; }
+.ws-head h1 { margin-bottom: 4px; }
+.ws-inst { background: var(--accent-soft); border-radius: 10px; padding: 10px 14px; margin: 8px 0 14px; }
+.ws-items { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px 18px; }
+.ws-item { background: var(--card); border: 2px solid var(--border); border-radius: 12px; padding: 10px 14px; break-inside: avoid; }
+.ws-item.ok { border-color: var(--good); background: var(--good-soft); }
+.ws-item.bad { border-color: var(--bad); background: var(--bad-soft); }
+.ws-q { font-size: 1.3rem; font-weight: 650; }
+.ws-n { color: var(--muted); font-weight: 700; margin-right: 4px; }
+.eq { font-family: ui-monospace, Menlo, Consolas, "Courier New", monospace; }
+.ws-ans { margin-top: 6px; }
+.ws-ans label { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 1.15rem; display: flex; align-items: center; gap: 8px; }
+.ws-ans input { font: inherit; width: 8em; max-width: 100%; padding: 6px 10px; border-radius: 8px; border: 2px solid var(--border); background: var(--bg); color: var(--text); }
+.ws-fb { font-size: 0.93rem; margin-top: 4px; }
+.ws-steps { margin-top: 4px; font-size: 0.93rem; }
+.ws-steps summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+.ws-steps pre { background: var(--accent-soft); border-radius: 8px; padding: 8px 12px; margin: 6px 0 0; white-space: pre-wrap; font-size: 0.95rem; }
+.ws-key { display: none; margin-top: 6px; color: var(--good); }
+.show-key .ws-key { display: block; }
+.ws-card h3 { font-size: 1rem; }
+.riddle { margin-top: 22px; background: var(--accent-soft); border-radius: var(--radius); padding: 12px 14px; }
+.riddle-q { margin: 0 0 8px; font-size: 1.25rem; }
+.code-bar { display: flex; flex-wrap: wrap; gap: 4px; }
+.code-cell { width: 54px; border: 2px solid var(--text); background: var(--card); border-radius: 4px; text-align: center; }
+.code-cell.space { background: linear-gradient(to top right, transparent calc(50% - 1px), var(--text) 50%, transparent calc(50% + 1px)), var(--card); }
+.code-letter { height: 38px; font-size: 1.6rem; font-weight: 800; color: var(--accent); line-height: 38px; }
+.code-num { border-top: 2px solid var(--text); font-weight: 700; padding: 2px 0; font-family: ui-monospace, Menlo, monospace; }
+.code-cell.solved { border-color: var(--good); }
+.riddle-help { font-size: 0.85rem; margin: 8px 0 0; }
+.riddle-done { margin-top: 10px; font-size: 1.2rem; background: var(--good-soft); border-radius: 10px; padding: 10px 14px; }
+@media (max-width: 640px) { .ws-items { grid-template-columns: 1fr; } .code-cell { width: 44px; } }
+@media print {
+  body { background: #fff; color: #000; display: block; min-height: 0; }
+  .topbar, .footer, .no-print, .crumbs, .btn-row { display: none !important; }
+  .print-only { display: block; }
+  main { max-width: none; padding: 0; }
+  .ws-item { border: 1px solid #999; background: #fff !important; min-height: 130px; padding: 8px 12px; }
+  .ws-items.tight .ws-item { min-height: 105px; }
+  .ws-work { min-height: 70px; background: linear-gradient(#bbb, #bbb) 50% 0 / 1px 100% no-repeat; }  /* T-chart line */
+  .ws-q { font-size: 1.15rem; }
+  .ws-inst { background: none; border: 1px solid #bbb; }
+  .ws-head h1 { font-size: 1.3rem; }
+  .ws-meta { margin: 6px 0 8px; font-size: 0.95rem; }
+  .ws-key { color: #000; }
+  .riddle { background: none; border: 1px solid #999; break-inside: avoid; }
+  .code-cell { border-color: #000; }
+  .code-letter { color: #000; }
+}

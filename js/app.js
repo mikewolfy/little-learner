@@ -6,6 +6,7 @@
   const G = window.GENERATORS || {};
   const P = window.PROGRAMS || { links: {}, subjectLinks: {}, gradeLinks: {} };
   const X = window.EXTRAS || {};
+  const WS = window.WORKSHEETS || { defs: {}, groups: [] };
   const GRADES = Object.keys(C).map(Number).sort((a, b) => a - b);
   const QUIZ_LENGTH = 10;
   const LONG_LENGTH = 20;
@@ -164,6 +165,8 @@
       </div>
       ${GRADES.some((g) => findSubject(g, "reading")) ? `<h2>📖 Reading Comprehension</h2>
       <div class="grid">${GRADES.filter((g) => findSubject(g, "reading")).map((g) => { const r = findSubject(g, "reading"); return `<a class="card subject subject-reading" href="#/grade/${g}/reading"><div class="big">📖</div><h3>Grade ${g} Reading</h3><p>${r.units.filter((u) => u.passage).length} passages with questions, plus ${r.units.filter((u) => !u.passage).length} reading skills guides.</p></a>`; }).join("")}</div>` : ""}
+      ${Object.keys(WS.defs).length ? `<h2>📝 Math Worksheets &amp; Tests</h2>
+      <div class="grid">${Object.keys(WS.defs).map((g) => `<a class="card subject subject-math" href="#/worksheets/${g}"><div class="big">📝</div><h3>Grade ${g} Math Worksheets</h3><p>${WS.defs[g].length} printable sheets: one-step equations, riddle worksheets, two-step equations, integers, percents, and mixed tests.</p></a>`).join("")}</div>` : ""}
       <h2>For parents</h2>
       <div class="grid">
         <a class="card" href="#/programs"><div class="big">🧭</div><h3>Programs &amp; Tracks</h3><p>How CCPS gifted services work, and the standard, honors, and gifted course options for grades 6–8.</p></a>
@@ -195,6 +198,7 @@
       <div class="btn-row">
         <a class="btn" href="#/quiz/${g}/all/all">🎯 Mixed review: all subjects</a>
         <a class="btn secondary" href="#/vocab/${g}">📒 Grade ${g} vocabulary (${vocabCount(g)} words)</a>
+        ${WS.defs[g] ? `<a class="btn secondary" href="#/worksheets/${g}">📝 Math worksheets &amp; tests</a>` : ""}
       </div>
       ${advanced.length ? `<section class="track-advanced">
         <div class="track-badge">🚀 Gifted &amp; Advanced Track</div>
@@ -231,6 +235,7 @@
       <div class="btn-row">
         <a class="btn" href="#/quiz/${g}/${sid}/all">${esc(s.reviewLabel || `🎯 Mixed review: all ${s.name} units`)}</a>
         <a class="btn secondary" href="#/quiz/${g}/${sid}/vocab">📒 ${esc(s.name)} vocabulary quiz</a>
+        ${sid === "math" && WS.defs[g] ? `<a class="btn secondary" href="#/worksheets/${g}">📝 Worksheets &amp; tests</a>` : ""}
       </div>
       ${(s.mixes || []).length ? `<h2>More practice rounds</h2>
         <div class="grid">${s.mixes.map((m) => `<a class="card" href="#/quiz/${g}/${sid}/mix-${m.id}"><h3>${esc(m.label)}</h3><p>${esc(m.about)} New questions every time.</p></a>`).join("")}</div>` : ""}
@@ -464,7 +469,12 @@
       if (!sc) return "";
       return `<tr><td>Grade ${g}</td><td>${s.icon} ${esc(s.name)}</td><td><a href="#/learn/${g}/${s.id}/${u.id}">${esc(u.title)}</a></td>
         <td>${stars(sc.best)} ${sc.best}%</td><td>${sc.last}%</td><td>${sc.attempts}</td><td>${sc.date}</td></tr>`;
-    }))).join("");
+    }))).join("") + Object.keys(scores).filter((k) => k.includes("/worksheet/")).map((k) => {
+      const [g, , id] = k.split("/"), sc = scores[k], d = ((WS.defs[g] || []).find((x) => x.id === id));
+      if (!d) return "";
+      return `<tr><td>Grade ${g}</td><td>📝 Worksheet</td><td><a href="#/worksheet/${g}/${id}">${esc(d.title)}</a></td>
+        <td>${stars(sc.best)} ${sc.best}%</td><td>${sc.last}%</td><td>${sc.attempts}</td><td>${sc.date}</td></tr>`;
+    }).join("");
     render(`
       ${crumbs([["Home", "#/"], ["My Progress"]])}
       <h1>📊 ${esc(store.current)}'s progress</h1>
@@ -549,6 +559,116 @@
       ${resourceCard(["programOfStudies", "ccpsCurriculum", "ccpsGifted", "giftedPlan", "ccpsSummer"], "Official CCPS documents")}`);
   }
 
+  // ---------- worksheets ----------
+  const worksheetKey = (g, id) => `${g}/worksheet/${id}`;
+
+  function viewWorksheetList(g) {
+    const defs = WS.defs[g];
+    if (!defs) return viewNotFound();
+    const sections = WS.groups.map((grp) => {
+      const list = defs.filter((d) => d.group === grp.id);
+      if (!list.length) return "";
+      return `<h2>${esc(grp.title)}</h2><p class="muted">${esc(grp.about)}</p>
+        <div class="grid">${list.map((d) => `<a class="card ws-card" href="#/worksheet/${g}/${d.id}">
+          <h3>${esc(d.title.replace(/^Riddle: /, "🧩 "))}</h3><p>${esc(d.blurb)}</p>
+          <p>${stars(bestFor(worksheetKey(g, d.id)))}</p></a>`).join("")}</div>`;
+    }).join("");
+    render(`
+      ${crumbs([["Home", "#/"], [`Grade ${g}`, `#/grade/${g}`], ["Worksheets & Tests"]])}
+      <h1>📝 Grade ${g} Math Worksheets &amp; Tests</h1>
+      <p class="muted">Practice sheets in the same style as class worksheets. Each one makes a fresh set of problems, checks your answers, and shows the steps. Press <b>Print</b> to print the sheet (and an answer key for grown-ups).</p>
+      ${sections}`);
+  }
+
+  function viewWorksheet(g, id, params) {
+    const def = (WS.defs[g] || []).find((d) => d.id === id);
+    if (!def) return viewNotFound();
+    let seed = Number(params.get("s"));
+    if (!seed) { seed = Math.floor(Math.random() * 1e9) + 1; history.replaceState(null, "", `#/worksheet/${g}/${id}?s=${seed}`); }
+    const sheet = WS.build(def, seed);
+    const total = sheet.items.length;
+    const key = worksheetKey(g, id);
+    const items = sheet.items.map((it, i) => `
+      <li class="ws-item" data-i="${i}">
+        <div class="ws-q"><span class="ws-n">${it.n}.</span> <span class="eq">${esc(it.q)}</span></div>
+        <div class="ws-ans no-print"><label>${it.v ? `${esc(it.v)} =` : "Answer:"}
+          <input type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Answer for problem ${it.n}" placeholder="${it.type === "ineq" ? "x > 7" : ""}"></label></div>
+        <div class="ws-work print-only"></div>
+        <div class="ws-fb no-print" aria-live="polite"></div>
+        <details class="ws-steps no-print" hidden><summary>Show the steps</summary><pre>${esc(it.steps.join("\n"))}</pre></details>
+        <div class="ws-key">Answer: <b>${esc(it.answerText)}</b></div>
+      </li>`).join("");
+    const rid = sheet.riddle;
+    const riddleBox = rid ? `<section class="riddle">
+        <h2 class="riddle-q">${esc(rid.question)}</h2>
+        <div class="code-bar" role="group" aria-label="Riddle answer boxes">${rid.cells.map((c, i) => `<div class="code-cell${c.letter ? "" : " space"}" data-i="${i}" data-n="${c.number}"><div class="code-letter">${c.letter ? "" : ""}</div><div class="code-num">${c.number}</div></div>`).join("")}</div>
+        <p class="muted riddle-help">Each box shows a solution. When you solve an equation correctly, its letter appears above its number. A diagonal box is a space between words.</p>
+        <div class="riddle-done no-print" hidden></div>
+      </section>` : "";
+    render(`
+      <div class="no-print">${crumbs([["Home", "#/"], [`Grade ${g}`, `#/grade/${g}`], ["Worksheets & Tests", `#/worksheets/${g}`], [def.title.replace(/^Riddle: /, "🧩 ")]])}</div>
+      <article class="worksheet" id="ws">
+        <header class="ws-head">
+          <h1>${esc(def.title)}</h1>
+          <div class="ws-meta print-only">Name: ____________________ &nbsp;&nbsp; Date: ____________ &nbsp;&nbsp; Score: ______ / ${total}</div>
+          <p class="ws-inst">${esc(sheet.instructions)}</p>
+          ${rid ? "" : `<p class="muted no-print">Type each answer. Negative answers can use a minus sign (−5).</p>`}
+        </header>
+        <ol class="ws-items${total > 12 ? " tight" : ""}">${items}</ol>
+        ${riddleBox}
+        <div class="btn-row no-print">
+          <button class="btn" type="button" id="wsCheck">✔ Check my answers</button>
+          <button class="btn secondary" type="button" id="wsKey">🔑 Show / hide answer key</button>
+          <button class="btn secondary" type="button" id="wsNew">🔄 New worksheet</button>
+          <button class="btn secondary" type="button" id="wsPrint">🖨 Print</button>
+          <button class="btn secondary" type="button" id="wsPrintKey">🖨 Print with answer key</button>
+        </div>
+        <div id="wsResult" class="no-print" aria-live="polite"></div>
+      </article>`);
+
+    const root = document.getElementById("ws");
+    const rows = [...root.querySelectorAll(".ws-item")];
+    const inputs = rows.map((r) => r.querySelector("input"));
+    inputs.forEach((inp, i) => inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); (inputs[i + 1] || document.getElementById("wsCheck")).focus(); } }));
+
+    document.getElementById("wsCheck").addEventListener("click", () => {
+      let right = 0, blank = 0;
+      rows.forEach((row, i) => {
+        const it = sheet.items[i], r = WS.check(it, inputs[i].value), fb = row.querySelector(".ws-fb");
+        row.classList.remove("ok", "bad");
+        if (r.blank) { blank++; fb.textContent = ""; return; }
+        const steps = row.querySelector(".ws-steps");
+        if (r.ok) { right++; row.classList.add("ok"); fb.textContent = "✅ Correct!"; steps.hidden = true; }
+        else {
+          row.classList.add("bad");
+          fb.innerHTML = r.invalid ? "❌ Please type a number." : `❌ Not quite. ${r.hint ? `Check: ${esc(r.hint)}` : "Try again, or look at the steps."}`;
+          steps.hidden = false;
+        }
+      });
+      if (rid) {
+        root.querySelectorAll(".code-cell").forEach((cell) => {
+          const c = rid.cells[Number(cell.dataset.i)];
+          const idx = sheet.items.findIndex((it) => it.letter === (c.letter || " "));
+          const ok = idx >= 0 && rows[idx].classList.contains("ok");
+          cell.querySelector(".code-letter").textContent = ok && c.letter ? c.letter : "";
+          cell.classList.toggle("solved", ok);
+        });
+      }
+      const pct = Math.round((right / total) * 100);
+      const done = rid && root.querySelectorAll(".code-cell.solved").length === rid.cells.length;
+      const riddleDone = root.querySelector(".riddle-done");
+      if (riddleDone) { riddleDone.hidden = !done; riddleDone.innerHTML = done ? `🎉 <b>You solved the riddle!</b> ${esc(rid.answer)}` : ""; }
+      document.getElementById("wsResult").innerHTML = blank === total ? `<p class="muted">Type some answers first, then press Check.</p>` : `
+        <div class="card" style="text-align:center"><div class="score-big">${right} / ${total}</div><div style="font-size:1.5rem">${stars(pct)}</div>
+        <p>${blank ? `${blank} not answered yet. ` : ""}${pct === 100 ? "Perfect! 🎉" : pct >= 80 ? "Great work! Check the ones that are marked ❌." : "Keep going! Look at the steps for the ones marked ❌ and try again."}</p></div>`;
+      if (blank < total) recordScore(key, right, total);
+    });
+    document.getElementById("wsKey").addEventListener("click", () => root.classList.toggle("show-key"));
+    document.getElementById("wsNew").addEventListener("click", () => { location.hash = `#/worksheet/${g}/${id}?s=${Math.floor(Math.random() * 1e9) + 1}`; });
+    document.getElementById("wsPrint").addEventListener("click", () => { root.classList.remove("show-key"); window.print(); });
+    document.getElementById("wsPrintKey").addEventListener("click", () => { root.classList.add("show-key"); window.print(); });
+  }
+
   function viewNotFound() {
     render(`<h1>Oops! Page not found.</h1><p><a href="#/">Go home</a></p>`);
   }
@@ -601,7 +721,9 @@
 
   // ---------- router ----------
   function route() {
-    const path = (location.hash.replace(/^#\/?/, "").split("?")[0] || "").split("/").filter(Boolean);
+    const [pathStr, query] = location.hash.replace(/^#\/?/, "").split("?");
+    const params = new URLSearchParams(query || "");
+    const path = (pathStr || "").split("/").filter(Boolean);
     const [view, a, b, c, d] = path;
     if (!view) return viewHome();
     if (view === "grade" && a && b) return viewSubject(Number(a), b);
@@ -611,6 +733,8 @@
     if (view === "progress") return viewProgress();
     if (view === "vocab") return viewVocab(Number(a));
     if (view === "programs") return viewPrograms();
+    if (view === "worksheets") return viewWorksheetList(Number(a));
+    if (view === "worksheet") return viewWorksheet(Number(a), b, params);
     viewNotFound();
   }
   window.addEventListener("hashchange", route);
