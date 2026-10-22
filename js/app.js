@@ -8,6 +8,7 @@
   const X = window.EXTRAS || {};
   const GRADES = Object.keys(C).map(Number).sort((a, b) => a - b);
   const QUIZ_LENGTH = 10;
+  const LONG_LENGTH = 20;
   const VOCAB_PER_QUIZ = 2;
   const app = document.getElementById("app");
 
@@ -109,6 +110,7 @@
       <div class="btn-row">
         <a class="btn" href="#/grade/${g}/${s.id}">📖 Study the skills</a>
         <a class="btn secondary" href="#/quiz/${g}/${s.id}/all">${esc(s.reviewLabel || "🎯 Mixed review")}</a>
+        ${(s.mixes || [])[0] ? `<a class="btn secondary" href="#/quiz/${g}/${s.id}/mix-${s.mixes[0].id}">${esc(s.mixes[0].label)}</a>` : ""}
       </div>
     </section>`;
   }
@@ -205,6 +207,8 @@
         <a class="btn" href="#/quiz/${g}/${sid}/all">${esc(s.reviewLabel || `🎯 Mixed review: all ${s.name} units`)}</a>
         <a class="btn secondary" href="#/quiz/${g}/${sid}/vocab">📒 ${esc(s.name)} vocabulary quiz</a>
       </div>
+      ${(s.mixes || []).length ? `<h2>More practice rounds</h2>
+        <div class="grid">${s.mixes.map((m) => `<a class="card" href="#/quiz/${g}/${sid}/mix-${m.id}"><h3>${esc(m.label)}</h3><p>${esc(m.about)} New questions every time.</p></a>`).join("")}</div>` : ""}
       ${resourceCard(subjectLinkKeys(s))}`);
   }
 
@@ -236,6 +240,7 @@
           <div class="vocab">${vocab}</div>` : ""}
         <div class="btn-row">
           <a class="btn" href="#/quiz/${g}/${sid}/${u.id}">✏️ Take the quiz</a>
+          <a class="btn secondary" href="#/quiz/${g}/${sid}/${u.id}/long">📝 20-question practice</a>
           ${prev ? `<a class="btn secondary" href="#/learn/${g}/${sid}/${prev.id}">← ${esc(prev.title)}</a>` : ""}
           ${next ? `<a class="btn secondary" href="#/learn/${g}/${sid}/${next.id}">${esc(next.title)} →</a>` : ""}
         </div>
@@ -256,9 +261,15 @@
   function unitPool(u, generatedCount) {
     const pool = (u.questions || []).map((t) => prepare(t, u.title));
     const gens = u.gen ? [].concat(u.gen) : [];
+    // Generated questions skip any answer already in this pool, so one quiz never repeats a word.
+    const used = new Set(pool.map((q) => q.choices[q.answer]));
     for (let i = 0; i < generatedCount && gens.length; i++) {
       const fn = G[gens[i % gens.length]];
-      if (fn) pool.push(prepare(fn(), u.title));
+      if (!fn) continue;
+      let q = prepare(fn(), u.title);
+      for (let t = 0; t < 12 && used.has(q.choices[q.answer]); t++) q = prepare(fn(), u.title);
+      used.add(q.choices[q.answer]);
+      pool.push(q);
     }
     return pool;
   }
@@ -278,40 +289,59 @@
     }).filter((q) => q.choices.length >= 3);
   }
 
-  function buildQuiz(g, sid, uid) {
+  // Drops questions that ask the same thing with the same answer (e.g. a handwritten and a generated one).
+  function dedupe(list) {
+    const seen = new Set();
+    return list.filter((q) => { const k = q.q + "=>" + q.choices[q.answer]; if (seen.has(k)) return false; seen.add(k); return true; });
+  }
+
+  function buildQuiz(g, sid, uid, len = QUIZ_LENGTH) {
     if (sid === "all") {
       const units = C[g].subjects.filter((s) => !isAdvanced(s)).flatMap((s) => s.units);
       return shuffle(units).slice(0, 20).map((u) => shuffle(unitPool(u, 1))[0]).filter(Boolean);
     }
     const s = findSubject(g, sid);
     if (uid === "vocab") return vocabQuestions(s, s.units.flatMap((u) => u.vocab), 15);
+    if (uid.startsWith("mix-")) {
+      const mix = (s.mixes || []).find((m) => "mix-" + m.id === uid);
+      const units = mix.units.map((id) => s.units.find((u) => u.id === id));
+      const per = Math.ceil(mix.size / units.length) + 1;
+      const picks = shuffle(units).flatMap((u) => shuffle(unitPool(u, 2)).slice(0, per));
+      return dedupe(shuffle(picks)).slice(0, mix.size);
+    }
     if (uid === "all") {
       const size = s.reviewSize || 15;
       const per = Math.ceil(size / s.units.length);
       const picks = shuffle(s.units).flatMap((u) => shuffle(unitPool(u, per)).slice(0, per));
-      return shuffle(picks).slice(0, size);
+      return dedupe(shuffle(picks)).slice(0, size);
     }
     const u = findUnit(g, sid, uid);
     // Each unit quiz mixes written questions, a couple of vocabulary questions,
     // and (for units with generators) at least 3 freshly generated problems.
-    const vocab = vocabQuestions(s, u.vocab, VOCAB_PER_QUIZ);
-    const genCount = u.gen ? 3 : 0;
-    const written = shuffle(unitPool(u, 0)).slice(0, QUIZ_LENGTH - vocab.length - genCount);
-    const extra = u.gen ? unitPool({ gen: u.gen }, QUIZ_LENGTH - vocab.length - written.length) : [];
-    return shuffle(written.concat(vocab, extra));
+    const vocab = vocabQuestions(s, u.vocab, len > QUIZ_LENGTH ? VOCAB_PER_QUIZ * 2 : VOCAB_PER_QUIZ);
+    const genCount = u.gen ? (len > QUIZ_LENGTH ? 6 : 3) : 0;
+    const written = shuffle(unitPool(u, 0)).slice(0, len - vocab.length - genCount);
+    const extra = u.gen ? unitPool({ gen: u.gen }, len - vocab.length - written.length) : [];
+    let list = dedupe(shuffle(written.concat(vocab, extra)));
+    for (let t = 0; u.gen && list.length < len && t < 20; t++) list = dedupe(list.concat(unitPool({ gen: u.gen }, 1)));
+    return shuffle(list).slice(0, len);
   }
 
-  function viewQuiz(g, sid, uid) {
+  function viewQuiz(g, sid, uid, mode) {
     if (!C[g]) return viewNotFound();
     if (sid !== "all" && !findSubject(g, sid)) return viewNotFound();
-    if (sid !== "all" && uid !== "all" && uid !== "vocab" && !findUnit(g, sid, uid)) return viewNotFound();
+    const isMix = uid && uid.startsWith("mix-");
+    const mix = isMix && ((findSubject(g, sid) || {}).mixes || []).find((m) => "mix-" + m.id === uid);
+    if (isMix && !mix) return viewNotFound();
+    if (sid !== "all" && uid !== "all" && uid !== "vocab" && !isMix && !findUnit(g, sid, uid)) return viewNotFound();
 
+    const long = mode === "long";
     const subj = sid === "all" ? null : findSubject(g, sid);
-    const unit = subj && uid !== "all" && uid !== "vocab" ? findUnit(g, sid, uid) : null;
-    const title = unit ? unit.title : subj ? `${subj.name}: ${uid === "vocab" ? "Vocabulary" : "Mixed Review"}` : `Grade ${g}: Mixed Review`;
+    const unit = subj && uid !== "all" && uid !== "vocab" && !isMix ? findUnit(g, sid, uid) : null;
+    const title = unit ? unit.title + (long ? " (long practice)" : "") : mix ? mix.label.replace(/^\S+\s/, "") : subj ? `${subj.name}: ${uid === "vocab" ? "Vocabulary" : "Mixed Review"}` : `Grade ${g}: Mixed Review`;
     const key = `${g}/${sid}/${uid}`;
     const back = unit ? `#/learn/${g}/${sid}/${uid}` : subj ? `#/grade/${g}/${sid}` : `#/grade/${g}`;
-    const qs = buildQuiz(g, sid, uid);
+    const qs = buildQuiz(g, sid, uid, long ? LONG_LENGTH : QUIZ_LENGTH);
     let i = 0, correct = 0;
     const missed = [];
 
@@ -375,7 +405,7 @@
           </div>
           ${missed.length ? `<h2>Review what you missed</h2>${review}` : ""}
           <div class="btn-row">
-            <a class="btn" href="#/quiz/${g}/${sid}/${uid}?r=${Date.now()}">🔁 Try again (new questions)</a>
+            <a class="btn" href="#/quiz/${g}/${sid}/${uid}${long ? "/long" : ""}?r=${Date.now()}">🔁 Try again (new questions)</a>
             <a class="btn secondary" href="${back}">${unit ? "📖 Back to study guide" : "← Back"}</a>
           </div>
         </section>`);
@@ -535,12 +565,12 @@
   // ---------- router ----------
   function route() {
     const path = (location.hash.replace(/^#\/?/, "").split("?")[0] || "").split("/").filter(Boolean);
-    const [view, a, b, c] = path;
+    const [view, a, b, c, d] = path;
     if (!view) return viewHome();
     if (view === "grade" && a && b) return viewSubject(Number(a), b);
     if (view === "grade" && a) return viewGrade(Number(a));
     if (view === "learn") return viewLearn(Number(a), b, c);
-    if (view === "quiz") return viewQuiz(Number(a), b, c);
+    if (view === "quiz") return viewQuiz(Number(a), b, c, d);
     if (view === "progress") return viewProgress();
     if (view === "vocab") return viewVocab(Number(a));
     if (view === "programs") return viewPrograms();

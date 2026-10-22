@@ -304,7 +304,170 @@
       const x = r(-4, 8), y = r(-4, 8), a = r(1, 3), sum = x + y, diff = a * x - y;
       return [`Solve the system:\nx + y = ${sum}\n${a === 1 ? "" : a}x − y = ${diff}`, choices(`(${x}, ${y})`, [`(${y}, ${x})`, `(${x + 1}, ${y - 1})`, `(${-x}, ${y})`]), 0, `Add the equations to eliminate y: ${a + 1}x = ${sum + diff}, so x = ${x}. Then ${x} + y = ${sum}, so y = ${y}. Check both equations!`];
     },
+
+    // ----- Grade 3 Reading Unit 1: endless spelling and word-study practice -----
+    ending3() {
+      // Words ending with the /əl/ sound. Wrong choices swap in the other three endings.
+      const bank = [
+        ["The slow ___ crawled across the road.", "turtle"],
+        ["Tom put a ___ of water on the shelf.", "bottle"], ["The baby began to ___.", "giggle"], ["Mom used a ___ to sew on a button.", "needle"],
+        ["The knight lived in a ___.", "castle"], ["The ___ ate an acorn.", "squirrel"], ["We stayed in a ___ on vacation.", "hotel"],
+        ["The ring has a green ___.", "jewel"], ["Dad will ___ to Ohio.", "travel"], ["I read a funny ___.", "novel"],
+        ["I ate chicken ___ soup.", "noodle"], ["The water ___ in the pool is high.", "level"], ["The pirates kept treasure in a ___.", "barrel"],
+        ["Mom used a ___ to pour the oil.", "funnel"], ["The train went through a ___.", "tunnel"], ["I dried off with a ___.", "towel"],
+        ["The ___ lives in the desert.", "camel"], ["Read the ___ on the jar.", "label"], ["Ben won a gold ___.", "medal"],
+        ["Push the ___ to make the bike go.", "pedal"], ["The traffic ___ turned red.", "signal"], ["A magnet sticks to ___.", "metal"],
+        ["That naughty ___ ate all the cookies!", "rascal"], ["This is the ___ question.", "final"], ["The ___ raised her hand.", "pupil"],
+        ["Wait ___ the bell rings.", "until"], ["We dug up a dinosaur ___.", "fossil"], ["I sharpened my ___.", "pencil"],
+        ["Blow out the ___.", "candle"], ["Put your plate on the ___.", "table"], ["I ate a crunchy red ___.", "apple"],
+        ["Grandma likes to do a jigsaw ___.", "puzzle"], ["Please ___ the puppy gently.", "handle"], ["She hurt her ___ when she fell.", "ankle"],
+        ["The baby blew a soap ___.", "bubble"], ["My ___ gave me a gift.", "uncle"], ["I rolled a glass ___ across the floor.", "marble"],
+        ["I like to ___ my toes in the sand.", "wiggle"], ["The dog sleeps in its ___.", "kennel"], ["The nurse works at the ___.", "hospital"],
+      ];
+      const [sentence, word] = pick(bank);
+      const end = word.slice(-2), stem = word.slice(0, -2);
+      const wrongs = ["le", "el", "al", "il"].filter((e) => e !== end).map((e) => stem + e);
+      return [`Which word is spelled correctly? ${sentence}`, [word].concat(wrongs), 0, `${word} ends in -${end}. Say it slowly: the ending sounds like 'ul' but is spelled -${end}.`];
+    },
+    silent3() {
+      // Silent letters: ph, mb, kn, wr, wh. Wrong choices drop or move the silent letter.
+      const bank = [
+        ["He cut the bread with a ___.", "knife", "kn"], ["Tie a ___ in the rope.", "knot", "kn"], ["The ___ rode a horse.", "knight", "kn"],
+        ["Please ___ on the soft rug.", "kneel", "kn"], ["Turn the door ___.", "knob", "kn"], ["She hurt her ___ on the desk.", "knuckle", "kn"],
+        ["I ___ the answer.", "knew", "kn"], ["Grandma will ___ a hat.", "knit", "kn"],
+        ["Please ___ the gift.", "wrap", "wr"], ["My watch is on my ___.", "wrist", "wr"], ["A green ___ hung on the door.", "wreath", "wr"],
+        ["The old ship was a ___.", "wreck", "wr"], ["She ___ a note.", "wrote", "wr"], ["That answer is ___.", "wrong", "wr"],
+        ["My aunt is a ___.", "writer", "wr"], ["Please ___ your name.", "write", "wr"], ["Try not to ___ your shirt.", "wrinkle", "wr"],
+        ["I combed my hair with a ___.", "comb", "mb"], ["A ___ fell on the floor.", "crumb", "mb"], ["A bird sat on the ___.", "limb", "mb"],
+        ["My toes felt ___.", "numb", "mb"], ["The ___ followed the sheep.", "lamb", "mb"], ["Let's ___ the hill.", "climb", "mb"],
+        ["I hurt my ___.", "thumb", "mb"], ["The ___ fixed the sink.", "plumber", "mb"],
+        ["An ___ has a trunk.", "elephant", "ph"], ["Sing the ___ song.", "alphabet", "ph"], ["The winner got a ___.", "trophy", "ph"],
+        ["The ___ shows our votes.", "graph", "ph"], ["My ___ is my brother's son.", "nephew", "ph"], ["Mom went to the ___.", "pharmacy", "ph"],
+        ["Write one ___.", "paragraph", "ph"], ["The singer held a ___.", "microphone", "ph"], ["A ___ jumped from the water.", "dolphin", "ph"],
+        ["Bread is made from ___ flour.", "wheat", "wh"], ["A cat has long ___.", "whiskers", "wh"], ["Mom will ___ the cream.", "whip", "wh"],
+        ["The wind made the leaves ___.", "whirl", "wh"], ["A ___ is a big ocean animal.", "whale", "wh"], ["My bike has a flat ___.", "wheel", "wh"],
+        ["The coach blew her ___.", "whistle", "wh"], ["Let's ___ so we don't wake the baby.", "whisper", "wh"], ["The snow is ___.", "white", "wh"],
+      ];
+      const [sentence, word, kind] = pick(bank);
+      const swapEnd = word.length > 3 ? word.slice(0, -2) + word.slice(-1) + word.slice(-2, -1) : word + "e";
+      let wrongs;
+      if (kind === "kn") wrongs = [word.slice(1), "g" + word.slice(1), "k" + word.slice(2)];
+      else if (kind === "wr") wrongs = [word.slice(1), "rw" + word.slice(2), "w" + word.slice(2)];
+      else if (kind === "mb") wrongs = [word.replace("mb", "m"), word.replace("mb", "mm"), word.replace("mb", "bm")];
+      else if (kind === "ph") wrongs = [word.replace("ph", "f"), word.replace("ph", "p"), word.replace("ph", "gh")];
+      else wrongs = ["w" + word.slice(2), "hw" + word.slice(2), swapEnd];
+      const hint = { kn: "kn says /n/ (the k is silent)", wr: "wr says /r/ (the w is silent)", mb: "mb says /m/ (the b is silent)", ph: "ph says /f/", wh: "wh says /w/" }[kind];
+      return [`Which word is spelled correctly? ${sentence}`, [word].concat(wrongs), 0, `${word}: ${hint}.`];
+    },
+    plural3() {
+      const cat = pick(["s", "es", "ies", "ys", "ves", "irregular"]);
+      const pickFrom = (arr) => pick(arr);
+      if (cat === "s") {
+        const w = pickFrom(["cat", "dog", "book", "desk", "bird", "farm", "cloud", "hat", "window", "flower", "pencil", "garden", "drum", "cup", "road", "lamp", "frog", "sock"]);
+        return [`One ${w}, two ___.`, [w + "s", w + "es", w + "ies", w + "'s"], 0, `Most words just add -s: ${w} → ${w}s. Don't add an apostrophe (${w}'s) to make a plural.`];
+      }
+      if (cat === "es") {
+        const w = pickFrom(["bus", "box", "fox", "wish", "dish", "lunch", "brush", "glass", "watch", "church", "dress", "peach", "bench", "class", "sandwich", "beach", "patch", "ditch", "match"]);
+        return [`One ${w}, two ___.`, [w + "es", w + "s", w + "ies", w + "'s"], 0, `Words ending in s, x, z, ch, or sh add -es: ${w} → ${w}es.`];
+      }
+      if (cat === "ies") {
+        const w = pickFrom(["baby", "penny", "story", "party", "fly", "family", "cherry", "bunny", "candy", "pony", "daisy", "sky", "body", "hobby", "jelly", "lily", "diary", "puppy", "lady", "city", "berry"]);
+        const stem = w.slice(0, -1);
+        return [`One ${w}, two ___.`, [stem + "ies", w + "s", w + "es", stem + "is"], 0, `${w} ends in a consonant + y, so change the y to i and add -es: ${stem}ies.`];
+      }
+      if (cat === "ys") {
+        const w = pickFrom(["monkey", "boy", "key", "day", "toy", "turkey", "donkey", "valley", "tray", "cowboy", "joy"]);
+        const stem = w.endsWith("ey") ? w.slice(0, -2) : w.slice(0, -1);
+        return [`One ${w}, two ___.`, [w + "s", stem + "ies", w + "es", w.slice(0, -1) + "is"], 0, `${w} ends in a vowel + y, so just add -s: ${w}s.`];
+      }
+      if (cat === "ves") {
+        const w = pickFrom([["leaf", "leaves"], ["wolf", "wolves"], ["shelf", "shelves"], ["loaf", "loaves"], ["knife", "knives"], ["calf", "calves"], ["elf", "elves"], ["life", "lives"], ["half", "halves"], ["thief", "thieves"], ["wife", "wives"]]);
+        return [`One ${w[0]}, two ___.`, [w[1], w[0] + "s", w[0] + "es", w[0] + "ves"], 0, `${w[0]}: change the f (or fe) to v and add -es: ${w[1]}.`];
+      }
+      const w = pickFrom([["child", "children", ["childs", "childrens", "childes"]], ["man", "men", ["mans", "manes", "mens"]], ["woman", "women", ["womans", "womanes", "womens"]],
+        ["mouse", "mice", ["mouses", "mices", "mouse's"]], ["tooth", "teeth", ["tooths", "toothes", "teeths"]], ["foot", "feet", ["foots", "feets", "footes"]],
+        ["goose", "geese", ["gooses", "geeses", "goosies"]], ["ox", "oxen", ["oxes", "oxs", "oxens"]], ["person", "people", ["persons", "peoples", "persones"]],
+        ["sheep", "sheep", ["sheeps", "sheepes", "sheepen"]], ["deer", "deer", ["deers", "deeres", "deerz"]], ["moose", "moose", ["mooses", "meese", "mooces"]]]);
+      return [`One ${w[0]}, two ___.`, [w[1]].concat(w[2]), 0, w[0] === w[1] ? `${w[0]} stays the same when there's more than one.` : `${w[0]} → ${w[1]} is an irregular plural. You just have to remember it!`];
+    },
+    compound3() {
+      // [word, part1, part2, meaning]
+      const bank = [
+        ["sunflower", "sun", "flower", "a tall yellow flower that turns toward the sun"], ["rainbow", "rain", "bow", "a colorful arc in the sky after rain"],
+        ["football", "foot", "ball", "a game played with an oval ball"], ["toothbrush", "tooth", "brush", "a brush for cleaning your teeth"],
+        ["mailbox", "mail", "box", "a box where letters are delivered"], ["bookshelf", "book", "shelf", "a shelf that holds books"],
+        ["snowman", "snow", "man", "a figure made of snow"], ["cupcake", "cup", "cake", "a small cake baked in a cup"],
+        ["sandbox", "sand", "box", "a box filled with sand to play in"], ["seashell", "sea", "shell", "a shell found at the sea"],
+        ["sailboat", "sail", "boat", "a boat that has sails"], ["doorbell", "door", "bell", "a bell you ring at a door"],
+        ["raincoat", "rain", "coat", "a coat that keeps you dry in the rain"], ["bedroom", "bed", "room", "a room with a bed"],
+        ["backpack", "back", "pack", "a bag you wear on your back"], ["fireplace", "fire", "place", "a place in a house for a fire"],
+        ["flashlight", "flash", "light", "a light you carry in your hand"], ["goldfish", "gold", "fish", "a small orange pet fish"],
+        ["popcorn", "pop", "corn", "corn that pops when it's heated"], ["notebook", "note", "book", "a book for writing notes"],
+        ["playground", "play", "ground", "an outdoor area for playing"], ["lighthouse", "light", "house", "a tower with a bright light for ships"],
+        ["snowflake", "snow", "flake", "one tiny piece of snow"], ["sunglasses", "sun", "glasses", "glasses that block the sun"],
+        ["moonlight", "moon", "light", "light from the moon"], ["weekend", "week", "end", "Saturday and Sunday"],
+        ["shoelace", "shoe", "lace", "a string used to tie a shoe"], ["hairbrush", "hair", "brush", "a brush for your hair"],
+        ["haircut", "hair", "cut", "a trim at the barber or salon"], ["butterfly", "butter", "fly", "a colorful insect with big wings"],
+        ["bathtub", "bath", "tub", "a tub you sit in to wash"], ["classroom", "class", "room", "a room where students learn"],
+        ["campfire", "camp", "fire", "a fire made at a campsite"], ["cowboy", "cow", "boy", "a person who herds cattle"],
+        ["fingernail", "finger", "nail", "the hard covering on the tip of a finger"], ["eyebrow", "eye", "brow", "the hair above your eye"],
+      ];
+      const notCompound = ["insect", "gather", "carpet", "button", "kitten", "answer", "farmer", "picture", "family", "pretend", "monster", "chicken", "problem", "pencil", "garden", "pillow"];
+      const [word, a, b, meaning] = pick(bank);
+      const type = r(1, 3);
+      if (type === 1) {
+        return ["Which word is a compound word?", [word].concat(shuffle3(notCompound, 3)), 0, `${word} = ${a} + ${b}. Both parts are words that help explain the meaning.`];
+      }
+      if (type === 2) {
+        return [`Which word can join '${a}' to make a compound word?`, [b].concat(shuffle3(["happy", "quickly", "because", "never", "very"], 3)), 0, `${a} + ${b} = ${word}.`];
+      }
+      const others = shuffle3(bank.filter((x) => x[0] !== word && x[3] !== meaning).map((x) => x[0]), 3);
+      return [`Which compound word means "${meaning}"?`, [word].concat(others), 0, `${word} = ${a} + ${b}: ${meaning}.`];
+    },
+    synAnt3() {
+      // [word, synonym, antonym, unrelated words]
+      const bank = [
+        ["big", "large", "small", ["round", "quiet", "green"]], ["happy", "glad", "sad", ["tall", "wet", "loud"]], ["fast", "quick", "slow", ["red", "soft", "heavy"]],
+        ["start", "begin", "finish", ["jump", "cold", "bright"]], ["shout", "yell", "whisper", ["spoon", "green", "heavy"]], ["loud", "noisy", "quiet", ["sweet", "round", "red"]],
+        ["tiny", "little", "huge", ["soft", "cold", "fast"]], ["smart", "clever", "foolish", ["round", "cold", "sweet"]], ["easy", "simple", "hard", ["green", "wet", "tall"]],
+        ["pretty", "lovely", "ugly", ["fast", "cold", "heavy"]], ["rich", "wealthy", "poor", ["round", "loud", "tall"]], ["brave", "fearless", "scared", ["cold", "green", "wet"]],
+        ["close", "near", "far", ["green", "soft", "sweet"]], ["clean", "spotless", "dirty", ["round", "quick", "loud"]], ["laugh", "giggle", "cry", ["tall", "hard", "wet"]],
+        ["under", "below", "above", ["sweet", "quick", "heavy"]], ["strong", "powerful", "weak", ["wet", "round", "loud"]], ["wet", "damp", "dry", ["tall", "loud", "quick"]],
+        ["old", "ancient", "new", ["wet", "round", "loud"]], ["tired", "sleepy", "energetic", ["round", "green", "fast"]], ["buy", "purchase", "sell", ["round", "green", "soft"]],
+        ["stop", "halt", "go", ["soft", "round", "sweet"]], ["shut", "close", "open", ["green", "tall", "sweet"]], ["right", "correct", "wrong", ["round", "soft", "tall"]],
+        ["sick", "ill", "healthy", ["round", "loud", "green"]], ["dull", "boring", "exciting", ["round", "soft", "wet"]], ["thin", "slim", "thick", ["loud", "green", "sweet"]],
+        ["always", "forever", "never", ["round", "soft", "wet"]],
+      ];
+      const [w, syn, ant, unrel] = pick(bank);
+      const same = Math.random() < 0.5;
+      const choices4 = [same ? ant : syn].concat(shuffle3(unrel, 2));
+      return [same ? `Which word means the SAME as ${w}?` : `Which word means the OPPOSITE of ${w}?`, [same ? syn : ant].concat(choices4), 0,
+        same ? `${w} and ${syn} are synonyms (they mean almost the same).` : `${w} and ${ant} are antonyms (they mean the opposite).`];
+    },
+    shades3() {
+      // Words ordered weakest → strongest.
+      const scales = [
+        ["fear", ["uneasy", "nervous", "afraid", "terrified", "petrified"]], ["heat", ["warm", "hot", "scorching", "boiling"]],
+        ["cold", ["cool", "chilly", "cold", "freezing"]], ["size", ["large", "huge", "enormous", "gigantic"]],
+        ["anger", ["annoyed", "upset", "angry", "furious"]], ["happiness", ["pleased", "happy", "delighted", "overjoyed"]],
+        ["loudness", ["whisper", "talk", "yell", "scream"]], ["speed", ["stroll", "walk", "jog", "run", "sprint"]],
+        ["wetness", ["damp", "wet", "soaked", "drenched"]], ["tiredness", ["sleepy", "tired", "exhausted"]],
+        ["force", ["tap", "knock", "bang", "pound"]], ["liking", ["like", "love", "adore"]], ["hunger", ["peckish", "hungry", "starving"]],
+      ];
+      const [name, words] = pick(scales);
+      const idx = shuffle3(words.map((_, i) => i), 3).sort((x, y) => x - y);
+      const most = Math.random() < 0.5;
+      const picked = idx.map((i) => words[i]);
+      const answer = most ? picked[picked.length - 1] : picked[0];
+      return [`Which word shows the ${most ? "MOST" : "LEAST"} ${name}?`, [answer].concat(picked.filter((x) => x !== answer)), 0, `From weakest to strongest: ${words.join(" → ")}.`];
+    },
   };
+
+  function shuffle3(arr, n) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a.slice(0, n);
+  }
 
   window.GENERATORS = G;
 })();

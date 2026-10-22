@@ -22,6 +22,8 @@ There are also **mixed-review quizzes** for each subject and each whole grade, *
 
 `data/grade3-unit1.js` adds a **Reading Unit 1** section to the top of Grade 3 and features it on the home page. It covers every skill on the Unit 1 assessment: long vowel spellings, soft g/c, words ending in -le/-el/-al/-il, silent letters (ph, mb, kn, wr, wh), compound words, synonyms and antonyms, shades of meaning, and plurals. It includes a 30-question **Unit 1 Practice Test**.
 
+Practice for this unit lives in `data/grade3-unit1-more.js` (about 390 extra questions with new words on the same sounds) plus random generators in `js/generators.js` (`ending3`, `silent3`, `plural3`, `compound3`, `synAnt3`, `shades3`) that build fresh spelling and word-study questions every time. Each skill has a 10-question quiz and a 20-question **long practice**, and the subject page has three themed practice rounds (Focus, Spelling, Word Study).
+
 To feature the next unit, copy that file, change the content, add a `<script>` tag for it in `index.html`, and set `focus` on the grade to point at the new section.
 
 ## Gifted, honors & programs
