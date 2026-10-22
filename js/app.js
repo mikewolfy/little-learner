@@ -4,9 +4,21 @@
 
   const C = window.CURRICULUM || {};
   const G = window.GENERATORS || {};
+  const P = window.PROGRAMS || { links: {}, subjectLinks: {}, gradeLinks: {} };
+  const X = window.EXTRAS || {};
   const GRADES = Object.keys(C).map(Number).sort((a, b) => a - b);
   const QUIZ_LENGTH = 10;
+  const VOCAB_PER_QUIZ = 2;
   const app = document.getElementById("app");
+
+  // Merge extra examples and vocabulary examples (data/extras-gradeN.js) into each unit.
+  // After this, every unit has `examples` (array) and vocab entries of [term, definition, example].
+  GRADES.forEach((g) => C[g].subjects.forEach((s) => s.units.forEach((u) => {
+    const x = X[`${g}/${s.id}/${u.id}`] || {};
+    u.examples = [].concat(u.example || [], u.examples || [], x.examples || []);
+    u.vocab = (u.vocab || []).concat(x.addVocab || []).map(([t, d, e]) => [t, d, e || (x.vocab || {})[t] || ""]);
+  })));
+  const isAdvanced = (s) => s.track === "advanced";
 
   // ---------- storage ----------
   const STORE_KEY = "littleLearner.v1";
@@ -72,6 +84,18 @@
     window.scrollTo(0, 0);
   }
 
+  function resourceCard(keys, title) {
+    const items = (keys || []).map((k) => P.links[k]).filter(Boolean);
+    if (!items.length) return "";
+    return `<section class="card resources">
+      <h3>📎 ${esc(title || "Official CCPS & Virginia resources")}</h3>
+      <ul>${items.map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a><span class="muted">: ${esc(l.note)}</span></li>`).join("")}</ul>
+    </section>`;
+  }
+  const subjectLinkKeys = (s) => P.subjectLinks[isAdvanced(s) ? "advanced" : s.id];
+  const vocabCount = (g) => C[g].subjects.reduce((n, s) => n + s.units.reduce((m, u) => m + u.vocab.length, 0), 0);
+  const trackBadge = (s) => isAdvanced(s) ? `<span class="track-badge">🚀 Gifted &amp; Advanced</span>` : "";
+
   // Highlights the unit a grade is currently studying in school (set via `focus` in the grade data).
   function focusBanner(g) {
     const f = C[g] && C[g].focus;
@@ -96,13 +120,14 @@
       return `<a class="card grade-card" href="#/grade/${g}">
         <div class="big">${g}${["th", "st", "nd", "rd"][g] || "th"}</div>
         <h3>${esc(d.title)}</h3>
-        <p>${d.subjects.map((s) => s.icon + " " + esc(s.name)).join(" · ")}</p>
+        <p>${d.subjects.filter((s) => !isAdvanced(s)).map((s) => s.icon + " " + esc(s.name)).join(" · ")}</p>
+        ${d.subjects.some(isAdvanced) ? `<p><span class="track-badge">🚀 + Gifted &amp; Advanced</span></p>` : ""}
       </a>`;
     }).join("");
     render(`
       <section class="hero">
         <h1>Hi, ${esc(store.current)}! What are we learning today?</h1>
-        <p>Pick a grade to see every unit in Math, English, Science, and History &amp; Social Science, based on the Virginia Standards of Learning (SOL). Read the study guide, flip the vocabulary cards, then take the quiz to earn stars.</p>
+        <p>Pick a grade to see every unit in Math, English, Science, and History &amp; Social Science, based on the Virginia Standards of Learning (SOL). Read the study guide and examples, learn the vocabulary, then take the quiz to earn stars.</p>
       </section>
       ${GRADES.map(focusBanner).join("")}
       <div class="grid">${cards}</div>
@@ -111,13 +136,19 @@
         <div class="card"><div class="big">📖</div><h3>Learn</h3><p>Each unit has key ideas, examples, and vocabulary flashcards.</p></div>
         <div class="card"><div class="big">✏️</div><h3>Quiz</h3><p>Up to 10 questions with explanations. Many math quizzes generate fresh problems every time.</p></div>
         <div class="card"><div class="big">⭐</div><h3>Earn stars</h3><p>Score 90% or better for 3 stars. Track progress for each child.</p></div>
-      </div>`);
+      </div>
+      <h2>For parents</h2>
+      <div class="grid">
+        <a class="card" href="#/programs"><div class="big">🧭</div><h3>Programs &amp; Tracks</h3><p>How CCPS gifted services work, and the standard, honors, and gifted course options for grades 6–8.</p></a>
+        ${GRADES.map((g) => `<a class="card" href="#/vocab/${g}"><div class="big">📒</div><h3>Grade ${g} Vocabulary</h3><p>All ${vocabCount(g)} words with definitions and examples, plus vocabulary quizzes.</p></a>`).join("")}
+      </div>
+      ${resourceCard(["ccpsCurriculum", "ccpsGifted", "programOfStudies"])}`);
   }
 
   function viewGrade(g) {
     const d = C[g];
     if (!d) return viewNotFound();
-    const cards = d.subjects.map((s) => {
+    const card = (s) => {
       const keys = s.units.map((u) => `${g}/${s.id}/${u.id}`);
       const done = keys.filter((k) => (bestFor(k) || 0) >= 70).length;
       return `<a class="card subject subject-${s.id}" href="#/grade/${g}/${s.id}">
@@ -126,14 +157,25 @@
         <p>${s.units.length} units · ${done} mastered</p>
         <p><span class="tag">${esc(s.standards)}</span></p>
       </a>`;
-    }).join("");
+    };
+    const advanced = d.subjects.filter(isAdvanced);
     render(`
       ${crumbs([["Home", "#/"], [`Grade ${g}`]])}
       <h1>Grade ${g}: ${esc(d.title)}</h1>
       <p class="muted">${esc(d.intro)}</p>
       ${focusBanner(g)}
-      <div class="grid">${cards}</div>
-      <div class="btn-row"><a class="btn" href="#/quiz/${g}/all/all">🎯 Mixed review: all subjects</a></div>`);
+      <div class="grid">${d.subjects.filter((s) => !isAdvanced(s)).map(card).join("")}</div>
+      <div class="btn-row">
+        <a class="btn" href="#/quiz/${g}/all/all">🎯 Mixed review: all subjects</a>
+        <a class="btn secondary" href="#/vocab/${g}">📒 Grade ${g} vocabulary (${vocabCount(g)} words)</a>
+      </div>
+      ${advanced.length ? `<section class="track-advanced">
+        <div class="track-badge">🚀 Gifted &amp; Advanced Track</div>
+        <h2>Beyond grade level</h2>
+        <p>${esc((P.gifted && P.gifted.byGrade && P.gifted.byGrade[g]) || "")} These units go deeper and faster than the standard Grade ${g} curriculum, matching what CCPS gifted, Center-Based Gifted, accelerated, and honors classes cover. <a href="#/programs">How these programs work →</a></p>
+        <div class="grid">${advanced.map(card).join("")}</div>
+      </section>` : ""}
+      ${resourceCard(P.gradeLinks[g], `Official resources for Grade ${g}`)}`);
   }
 
   function viewSubject(g, sid) {
@@ -155,10 +197,15 @@
     }).join("");
     render(`
       ${crumbs([["Home", "#/"], [`Grade ${g}`, `#/grade/${g}`], [s.name]])}
+      ${trackBadge(s)}
       <h1>${s.icon} Grade ${g} ${esc(s.name)}</h1>
       <p class="muted">${esc(s.about || "")} <span class="tag">${esc(s.standards)}</span></p>
-      <ul class="unit-list">${rows}</ul>
-      <div class="btn-row"><a class="btn" href="#/quiz/${g}/${sid}/all">${esc(s.reviewLabel || `🎯 Mixed review: all ${s.name} units`)}</a></div>`);
+      <ul class="unit-list${isAdvanced(s) ? " advanced" : ""}">${rows}</ul>
+      <div class="btn-row">
+        <a class="btn" href="#/quiz/${g}/${sid}/all">${esc(s.reviewLabel || `🎯 Mixed review: all ${s.name} units`)}</a>
+        <a class="btn secondary" href="#/quiz/${g}/${sid}/vocab">📒 ${esc(s.name)} vocabulary quiz</a>
+      </div>
+      ${resourceCard(subjectLinkKeys(s))}`);
   }
 
   function viewLearn(g, sid, uid) {
@@ -168,18 +215,25 @@
     const idx = s.units.indexOf(u);
     const next = s.units[idx + 1];
     const prev = s.units[idx - 1];
-    const vocab = (u.vocab || []).map(([t, def]) =>
-      `<button class="flip" type="button"><div class="term">${esc(t)}</div><div class="def">${esc(def)}</div></button>`).join("");
+    const vocab = u.vocab.map(([t, def, ex]) => `<button class="vcard" type="button">
+        <span class="term">${esc(t)}</span>
+        <span class="def">${esc(def)}</span>
+        ${ex ? `<span class="vex"><b>Example:</b> ${esc(ex)}</span>` : ""}
+      </button>`).join("");
     const readText = [u.title, u.summary].concat(u.points || []).join(". ");
     render(`
       ${crumbs([["Home", "#/"], [`Grade ${g}`, `#/grade/${g}`], [s.name, `#/grade/${g}/${sid}`], [u.title]])}
       <article class="learn">
+        ${trackBadge(s)}
         <h1>${esc(u.title)}</h1>
         <p>${u.sol ? `<span class="tag">${esc(u.sol)}</span>` : ""}<span class="muted">${esc(u.summary)}</span> ${speakBtn(readText)}</p>
         <h2>Key ideas</h2>
         <ul>${(u.points || []).map((p) => `<li>${esc(p)}</li>`).join("")}</ul>
-        ${u.example ? `<h2>Example</h2><div class="example">${esc(u.example)}</div>` : ""}
-        ${vocab ? `<h2>Vocabulary <span class="muted" style="font-size:.85rem;font-weight:400">(tap a card to flip it)</span></h2><div class="vocab">${vocab}</div>` : ""}
+        ${u.examples.length ? `<h2>${u.examples.length > 1 ? "Examples" : "Example"}</h2>${u.examples.map((ex) => `<div class="example">${esc(ex)}</div>`).join("")}` : ""}
+        ${vocab ? `<h2>Vocabulary</h2>
+          <p class="muted vocab-help"><span class="list-only">Read each word, what it means, and an example.</span><span class="cards-only">Say what each word means, then tap the card to check.</span>
+          <button class="chip" type="button" data-action="flashcards"><span class="list-only">🃏 Practice as flashcards</span><span class="cards-only">📋 Show all definitions</span></button></p>
+          <div class="vocab">${vocab}</div>` : ""}
         <div class="btn-row">
           <a class="btn" href="#/quiz/${g}/${sid}/${u.id}">✏️ Take the quiz</a>
           ${prev ? `<a class="btn secondary" href="#/learn/${g}/${sid}/${prev.id}">← ${esc(prev.title)}</a>` : ""}
@@ -209,12 +263,28 @@
     return pool;
   }
 
+  // Builds "what does this word mean?" questions from a unit's vocabulary.
+  // Wrong answers come from other vocabulary in the same subject.
+  function vocabQuestions(s, entries, n) {
+    const all = s.units.flatMap((u) => u.vocab);
+    return shuffle(entries).slice(0, n).map(([t, d, e]) => {
+      const others = shuffle(all.filter(([t2, d2]) => t2.toLowerCase() !== t.toLowerCase() && d2 !== d));
+      const wrong = [];
+      for (const o of others) if (wrong.length < 3 && !wrong.some((w) => w[0] === o[0] || w[1] === o[1])) wrong.push(o);
+      const explain = `${t}: ${d}${e ? ` Example: ${e}` : ""}`;
+      return Math.random() < 0.5
+        ? prepare([`What does "${t}" mean?`, [d].concat(wrong.map((w) => w[1])), 0, explain], "Vocabulary")
+        : prepare([`Which word means: "${d}"`, [t].concat(wrong.map((w) => w[0])), 0, explain], "Vocabulary");
+    }).filter((q) => q.choices.length >= 3);
+  }
+
   function buildQuiz(g, sid, uid) {
     if (sid === "all") {
-      const units = C[g].subjects.flatMap((s) => s.units);
+      const units = C[g].subjects.filter((s) => !isAdvanced(s)).flatMap((s) => s.units);
       return shuffle(units).slice(0, 20).map((u) => shuffle(unitPool(u, 1))[0]).filter(Boolean);
     }
     const s = findSubject(g, sid);
+    if (uid === "vocab") return vocabQuestions(s, s.units.flatMap((u) => u.vocab), 15);
     if (uid === "all") {
       const size = s.reviewSize || 15;
       const per = Math.ceil(size / s.units.length);
@@ -222,21 +292,23 @@
       return shuffle(picks).slice(0, size);
     }
     const u = findUnit(g, sid, uid);
-    // Units with generators keep at least 3 freshly generated problems per quiz.
-    const written = shuffle(unitPool(u, 0));
-    if (!u.gen) return written.slice(0, QUIZ_LENGTH);
-    const keep = written.slice(0, QUIZ_LENGTH - 3);
-    return shuffle(keep.concat(unitPool({ gen: u.gen }, QUIZ_LENGTH - keep.length)));
+    // Each unit quiz mixes written questions, a couple of vocabulary questions,
+    // and (for units with generators) at least 3 freshly generated problems.
+    const vocab = vocabQuestions(s, u.vocab, VOCAB_PER_QUIZ);
+    const genCount = u.gen ? 3 : 0;
+    const written = shuffle(unitPool(u, 0)).slice(0, QUIZ_LENGTH - vocab.length - genCount);
+    const extra = u.gen ? unitPool({ gen: u.gen }, QUIZ_LENGTH - vocab.length - written.length) : [];
+    return shuffle(written.concat(vocab, extra));
   }
 
   function viewQuiz(g, sid, uid) {
     if (!C[g]) return viewNotFound();
     if (sid !== "all" && !findSubject(g, sid)) return viewNotFound();
-    if (sid !== "all" && uid !== "all" && !findUnit(g, sid, uid)) return viewNotFound();
+    if (sid !== "all" && uid !== "all" && uid !== "vocab" && !findUnit(g, sid, uid)) return viewNotFound();
 
     const subj = sid === "all" ? null : findSubject(g, sid);
-    const unit = subj && uid !== "all" ? findUnit(g, sid, uid) : null;
-    const title = unit ? unit.title : subj ? `${subj.name}: Mixed Review` : `Grade ${g}: Mixed Review`;
+    const unit = subj && uid !== "all" && uid !== "vocab" ? findUnit(g, sid, uid) : null;
+    const title = unit ? unit.title : subj ? `${subj.name}: ${uid === "vocab" ? "Vocabulary" : "Mixed Review"}` : `Grade ${g}: Mixed Review`;
     const key = `${g}/${sid}/${uid}`;
     const back = unit ? `#/learn/${g}/${sid}/${uid}` : subj ? `#/grade/${g}/${sid}` : `#/grade/${g}`;
     const qs = buildQuiz(g, sid, uid);
@@ -340,6 +412,76 @@
       <p class="muted" style="font-size:.85rem;margin-top:20px">Progress is saved in this browser only.</p>`);
   }
 
+  function viewVocab(g) {
+    const d = C[g];
+    if (!d) return viewNotFound();
+    const sections = d.subjects.map((s) => {
+      const units = s.units.filter((u) => u.vocab.length).map((u) => `
+        <div class="gloss-unit">
+          <h3><a href="#/learn/${g}/${s.id}/${u.id}">${esc(u.title)}</a></h3>
+          <dl class="glossary">${u.vocab.map(([t, def, ex]) => `<div class="gloss-item" data-text="${esc((t + " " + def + " " + ex).toLowerCase())}">
+            <dt>${esc(t)}</dt><dd>${esc(def)}${ex ? `<div class="vex"><b>Example:</b> ${esc(ex)}</div>` : ""}</dd></div>`).join("")}</dl>
+        </div>`).join("");
+      return `<section class="gloss-subject${isAdvanced(s) ? " advanced" : ""}">
+        <h2>${s.icon} ${esc(s.name)} ${trackBadge(s)} <a class="chip" href="#/quiz/${g}/${s.id}/vocab">📒 Quiz me</a></h2>${units}</section>`;
+    }).join("");
+    render(`
+      ${crumbs([["Home", "#/"], [`Grade ${g}`, `#/grade/${g}`], ["Vocabulary"]])}
+      <h1>📒 Grade ${g} Vocabulary</h1>
+      <p class="muted">${vocabCount(g)} words with clear definitions and examples, organized by subject and unit.</p>
+      <input id="glossSearch" class="search" type="search" placeholder="Search for a word…" autocomplete="off">
+      <p id="glossEmpty" class="muted" hidden>No words match your search.</p>
+      ${sections}`);
+    const input = document.getElementById("glossSearch");
+    input.addEventListener("input", () => {
+      const q = input.value.trim().toLowerCase();
+      let shown = 0;
+      app.querySelectorAll(".gloss-item").forEach((el) => { const ok = !q || el.dataset.text.includes(q); el.hidden = !ok; if (ok) shown++; });
+      app.querySelectorAll(".gloss-unit, .gloss-subject").forEach((el) => { el.hidden = !el.querySelector(".gloss-item:not([hidden])"); });
+      document.getElementById("glossEmpty").hidden = shown > 0;
+    });
+  }
+
+  function viewPrograms() {
+    const gf = P.gifted, ms = P.middle;
+    if (!gf || !ms) return viewNotFound();
+    const verify = (x) => x.verify ? ` <span class="verify" title="Not confirmed on an official CCPS page. Check with your school.">check with school</span>` : "";
+    const lanes = ms.mathLanes.map((l) => `<div class="lane">
+        <div class="lane-name">${esc(l.name)}${verify(l)}</div>
+        <div class="lane-steps">${l.steps.map((st) => `<span class="step">${esc(st)}</span>`).join('<span class="arrow">→</span>')}</div>
+        <div class="muted">${esc(l.text)}</div>
+      </div>`).join("");
+    const grades = ms.grades.map((gr) => `
+      <section class="card ms-grade">
+        <h3>Grade ${gr.grade}${C[gr.grade] ? ` <a class="chip" href="#/grade/${gr.grade}">Study Grade ${gr.grade} on this site →</a>` : ""}</h3>
+        <div class="table-wrap"><table class="prog tracks">
+          <thead><tr><th>Subject</th><th>Standard</th><th>Honors</th><th>Gifted (CBG)</th></tr></thead>
+          <tbody>${gr.courses.map((c) => `<tr><td><b>${esc(c.subject)}</b>${verify(c)}</td><td>${esc(c.standard)}</td><td class="t-honors">${esc(c.honors)}</td><td class="t-gifted">${esc(c.gifted)}</td></tr>`).join("")}</tbody>
+        </table></div>
+        ${Object.entries(gr.topics).map(([course, list]) => `<details><summary>What's covered: ${esc(course)}</summary><ul>${list.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></details>`).join("")}
+      </section>`).join("");
+    render(`
+      ${crumbs([["Home", "#/"], ["Programs & Tracks"]])}
+      <h1>🧭 CCPS Programs &amp; Tracks</h1>
+      <p class="muted">A parent's guide to how CCPS's standard, honors, and gifted programs fit together. Always confirm placement with your child's school, since courses can change from year to year.</p>
+
+      <h2>🚀 Gifted education (grades K–8)</h2>
+      <p>${esc(gf.summary)}</p>
+      <div class="grid">${gf.services.map((x) => `<div class="card track-card"><div class="big">${x.icon}</div><h3>${esc(x.name)}</h3><p>${esc(x.text)}</p></div>`).join("")}</div>
+      <div class="card note"><b>How to refer your child:</b> ${esc(gf.referral)}</div>
+      <p>On this site, each grade has a separate <span class="track-badge">🚀 Gifted &amp; Advanced</span> section with units that go beyond the standard curriculum:
+        ${GRADES.filter((g) => C[g].subjects.some(isAdvanced)).map((g) => `<a href="#/grade/${g}/advanced">Grade ${g}</a>`).join(" · ")}</p>
+
+      <h2>🏫 Middle school tracks (grades 6–8)</h2>
+      <p>${esc(ms.honorsNote)}</p>
+      <div class="card note">⚠️ ${esc(ms.socialStudiesNote)}</div>
+      <h3>Math pathways</h3>
+      <div class="lanes">${lanes}</div>
+      ${grades}
+      <p class="muted" style="font-size:.9rem">Items marked <span class="verify">check with school</span> came from the course list but not from an official description, so confirm them with your school counselor.</p>
+      ${resourceCard(["programOfStudies", "ccpsCurriculum", "ccpsGifted", "giftedPlan", "ccpsSummer"], "Official CCPS documents")}`);
+  }
+
   function viewNotFound() {
     render(`<h1>Oops! Page not found.</h1><p><a href="#/">Go home</a></p>`);
   }
@@ -376,8 +518,16 @@
 
   // Delegated handlers for flip cards and read-aloud buttons.
   app.addEventListener("click", (e) => {
-    const flip = e.target.closest(".flip");
-    if (flip) flip.classList.toggle("open");
+    const card = e.target.closest(".vcard");
+    if (card) card.classList.toggle("open");
+    const fc = e.target.closest('[data-action="flashcards"]');
+    if (fc) {
+      const v = app.querySelector(".vocab");
+      const on = !v.classList.contains("cards");
+      v.classList.toggle("cards", on);
+      fc.closest(".vocab-help").classList.toggle("cards", on);
+      v.querySelectorAll(".vcard").forEach((c) => c.classList.remove("open"));
+    }
     const sp = e.target.closest("[data-speak]");
     if (sp) speak(sp.dataset.speak);
   });
@@ -392,6 +542,8 @@
     if (view === "learn") return viewLearn(Number(a), b, c);
     if (view === "quiz") return viewQuiz(Number(a), b, c);
     if (view === "progress") return viewProgress();
+    if (view === "vocab") return viewVocab(Number(a));
+    if (view === "programs") return viewPrograms();
     viewNotFound();
   }
   window.addEventListener("hashchange", route);

@@ -618,7 +618,7 @@ window.CURRICULUM[7] = {
     },
     {
       id: "history", name: "Civics & Economics", icon: "🏛️", standards: "2023 History & Social Science SOL",
-      about: "Civics & Economics: founding documents, citizenship, participation, national, state, and local government, the courts, and economics. This course ends with an SOL test.",
+      about: "Civics & Economics: founding documents, citizenship, participation, national, state, and local government, the courts, and economics. This course ends with an SOL test. Note: Virginia's new standards place Civics in 7th grade, but CCPS has offered it in 8th grade. Check which one your child's school uses this year.",
       units: [
         {
           id: "foundations", title: "Foundations of American Government", sol: "CE.1",

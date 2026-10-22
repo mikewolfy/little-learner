@@ -248,6 +248,62 @@
       const a = pick([2, 3, 4, 5]), x = r(-6, 10), b = r(1, 12), c = a * x + b, sym = pick(["<", ">", "≤", "≥"]);
       return [`Solve: ${a}x + ${b} ${sym} ${c}`, choices(`x ${sym} ${x}`, [`x ${sym} ${-x}`, `x ${{ "<": ">", ">": "<", "≤": "≥", "≥": "≤" }[sym]} ${x}`, `x ${sym} ${x + b}`]), 0, `Subtract ${b}: ${a}x ${sym} ${c - b}. Divide by ${a} (positive, so the sign stays): x ${sym} ${x}.`];
     },
+
+    // ----- Gifted & Advanced -----
+    mult2x1() {
+      const a = r(12, 98), b = r(3, 9), p = a * b, t = Math.floor(a / 10) * 10, o = a % 10;
+      return [`${a} × ${b} = ?`, choices(p, [p + b, p - 10, t * b + o, p + 10]), 0, `Break ${a} into ${t} + ${o}: ${t} × ${b} = ${t * b} and ${o} × ${b} = ${o * b}. Add: ${t * b} + ${o * b} = ${p}.`];
+    },
+    equivFrac3() {
+      const d = pick([2, 3, 4, 5, 6]), n = r(1, d - 1), k = r(2, 4);
+      return [`Which fraction is equivalent to ${n}/${d}?`, choices(`${n * k}/${d * k}`, [`${n + k}/${d + k}`, `${n * k}/${d}`, `${n}/${d * k}`]), 0, `Multiply the numerator AND denominator by the same number (${k}): ${n}×${k} = ${n * k}, ${d}×${k} = ${d * k}.`];
+    },
+    intAdd5() {
+      const a = r(-12, 12), b = r(-12, 12) || 4, sub = Math.random() < 0.5;
+      const ans = sub ? a - b : a + b;
+      const q = sub ? `${a} − (${b})` : `${a} + (${b})`;
+      return [`${q} = ?`, choices(ans, [-ans, ans + 2, ans - 2, sub ? a + b : a - b], near(ans, 5)), 0, sub ? `Subtracting is the same as adding the opposite: ${a} + (${-b}) = ${ans}. Picture moving on a number line.` : `Start at ${a} on the number line and move ${b >= 0 ? "right" : "left"} ${Math.abs(b)}: you land on ${ans}.`];
+    },
+    oneStep5() {
+      const x = r(2, 15), k = r(2, 9), op = pick(["+", "−", "×", "÷"]);
+      let q, ex;
+      if (op === "+") { q = `x + ${k} = ${x + k}`; ex = `Subtract ${k} from both sides: x = ${x}.`; }
+      if (op === "−") { q = `x − ${k} = ${x - k}`; ex = `Add ${k} to both sides: x = ${x}.`; }
+      if (op === "×") { q = `${k}x = ${k * x}`; ex = `Divide both sides by ${k}: x = ${x}.`; }
+      if (op === "÷") { q = `x ÷ ${k} = ${x}`; ex = `Multiply both sides by ${k}: x = ${x * k}.`; }
+      const ans = op === "÷" ? x * k : x;
+      return [`Solve: ${q}`, choices(`x = ${ans}`, [`x = ${ans + k}`, `x = ${Math.abs(ans - k) || ans + 1}`, `x = ${ans * 2}`]), 0, ex];
+    },
+    exponent5() {
+      const b = r(2, 10), e = b <= 5 ? r(2, 4) : 2, v = Math.pow(b, e);
+      return [`What is ${b}^${e}?`, choices(v, [b * e, b + e, v + b]), 0, `${b}^${e} means ${Array(e).fill(b).join(" × ")} = ${v}. It is NOT ${b} × ${e}.`];
+    },
+    quadrant5() {
+      const x = r(-9, 9) || 3, y = r(-9, 9) || -2;
+      const q = x > 0 && y > 0 ? "Quadrant I" : x < 0 && y > 0 ? "Quadrant II" : x < 0 && y < 0 ? "Quadrant III" : "Quadrant IV";
+      return [`In which quadrant is the point (${x}, ${y})?`, ["Quadrant I", "Quadrant II", "Quadrant III", "Quadrant IV"].sort((a, b) => (a === q ? -1 : b === q ? 1 : 0)), 0, `x is ${x > 0 ? "positive (right)" : "negative (left)"} and y is ${y > 0 ? "positive (up)" : "negative (down)"}, so it's in ${q}.`];
+    },
+    multiStep7() {
+      const a = pick([2, 3, 4, 5]), c = pick([1, 2, 3].filter((n) => n !== a)), x = r(-6, 9), b = r(-10, 10), d = (a - c) * x + b;
+      const bs = b >= 0 ? `+ ${b}` : `− ${-b}`, ds = d;
+      return [`Solve: ${a}x ${bs} = ${c}x + ${ds}`, choices(`x = ${x}`, [`x = ${-x}`, `x = ${x + 1}`, `x = ${x - 2}`]), 0, `Subtract ${c}x from both sides: ${a - c}x ${bs} = ${ds}. Then ${b >= 0 ? "subtract" : "add"} ${Math.abs(b)}: ${a - c}x = ${d - b}. Divide by ${a - c}: x = ${x}.`];
+    },
+    slopeInt7() {
+      const m = pick([-3, -2, -1, 1, 2, 3, 4]), b = r(-6, 6);
+      const eq = `y = ${m === 1 ? "" : m === -1 ? "−" : m}x ${b >= 0 ? "+ " + b : "− " + -b}`;
+      if (Math.random() < 0.5) return [`What is the slope of ${eq}?`, choices(m, [b, -m, m + 1].filter((v) => v !== m)), 0, `In y = mx + b, m is the slope. Here m = ${m}.`];
+      return [`What is the y-intercept of ${eq}?`, choices(b, [m, -b, b + 1].filter((v) => v !== b)), 0, `In y = mx + b, b is the y-intercept (where the line crosses the y-axis). Here b = ${b}.`];
+    },
+    expLaws7() {
+      const b = pick(["x", "a", "n", "2"]), m = r(2, 7), n = r(2, 5), kind = pick(["product", "quotient", "power"]);
+      if (kind === "product") return [`Simplify: ${b}^${m} · ${b}^${n}`, choices(`${b}^${m + n}`, [`${b}^${m * n}`, `${b}^${Math.abs(m - n) || 1}`, `${2}${b}^${m + n}`]), 0, `Product rule: same base, ADD the exponents. ${m} + ${n} = ${m + n}.`];
+      if (kind === "quotient") { const big = m + n; return [`Simplify: ${b}^${big} ÷ ${b}^${n}`, choices(`${b}^${m}`, [`${b}^${big + n}`, `${b}^${big * n}`, `${b}^${n}`].filter((c) => c !== `${b}^${m}`)), 0, `Quotient rule: same base, SUBTRACT the exponents. ${big} − ${n} = ${m}.`]; }
+      return [`Simplify: (${b}^${m})^${n}`, choices(`${b}^${m * n}`, [`${b}^${m + n}`, `${b}^${m}`, `${n}${b}^${m}`]), 0, `Power rule: MULTIPLY the exponents. ${m} × ${n} = ${m * n}.`];
+    },
+    system7() {
+      const x = r(-4, 8), y = r(-4, 8), a = r(1, 3), sum = x + y, diff = a * x - y;
+      return [`Solve the system:\nx + y = ${sum}\n${a === 1 ? "" : a}x − y = ${diff}`, choices(`(${x}, ${y})`, [`(${y}, ${x})`, `(${x + 1}, ${y - 1})`, `(${-x}, ${y})`]), 0, `Add the equations to eliminate y: ${a + 1}x = ${sum + diff}, so x = ${x}. Then ${x} + y = ${sum}, so y = ${y}. Check both equations!`];
+    },
   };
 
   window.GENERATORS = G;

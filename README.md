@@ -24,6 +24,16 @@ There are also **mixed-review quizzes** for each subject and each whole grade, *
 
 To feature the next unit, copy that file, change the content, add a `<script>` tag for it in `index.html`, and set `focus` on the grade to point at the new section.
 
+## Gifted, honors & programs
+
+- Each grade has a separate **🚀 Gifted & Advanced** section (`data/advanced.js`), styled differently from the standard curriculum. Grade 3 has challenge units, Grade 5 previews CCPS accelerated math (rational numbers and algebra) and gifted ELA, and Grade 7 has an Algebra I preview plus honors English and science.
+- The **Programs & Tracks** page (`data/programs.js`) explains CCPS gifted services (home-school cluster grouping, Center-Based Gifted academies, accelerated math) and the standard, honors, and gifted course options for grades 6–8, with math pathways. Items that couldn't be confirmed on an official page are marked "check with school."
+- Grade, subject, and Programs pages link to official CCPS and Virginia Department of Education resources.
+
+## Vocabulary
+
+Every vocabulary word has a definition and an example. Units show words as a list (with a flashcard mode), each grade has a searchable **Vocabulary** page, every subject has a vocabulary quiz, and unit quizzes include 2 vocabulary questions. Extra worked examples and vocabulary examples live in `data/extras-gradeN.js`.
+
 ## Running it
 
 No build step and no dependencies. Open `index.html` in a browser, or serve the folder:
