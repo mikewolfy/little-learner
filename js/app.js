@@ -97,6 +97,29 @@
   const vocabCount = (g) => C[g].subjects.reduce((n, s) => n + s.units.reduce((m, u) => m + u.vocab.length, 0), 0);
   const trackBadge = (s) => isAdvanced(s) ? `<span class="track-badge">🚀 Gifted &amp; Advanced</span>` : "";
 
+  // Reading passages. text[] items are paragraphs ("## Title" makes a heading). format: prose | poem | script | steps.
+  function passageHtml(p) {
+    const numbered = p.numbered !== false && (p.format || "prose") === "prose";
+    let n = 0;
+    const body = p.text.map((t) => {
+      if (t.startsWith("## ")) return `<h4>${esc(t.slice(3))}</h4>`;
+      if (p.format === "poem") { n++; return `<div class="stanza"><span class="pnum">${n}</span><p>${esc(t)}</p></div>`; }
+      if (p.format === "script") {
+        const m = t.match(/^([A-Z][A-Z .'-]*):\s*(.*)$/s);
+        const line = m ? `<b>${esc(m[1])}:</b> ${esc(m[2])}` : esc(t);
+        return `<p class="script-line">${line.replace(/\(([^)]*)\)/g, "<em>($1)</em>")}</p>`;
+      }
+      if (numbered) { n++; return `<p><span class="pnum">${n}</span>${esc(t)}</p>`; }
+      return `<p>${esc(t)}</p>`;
+    }).join("");
+    return `<article class="passage passage-${p.format || "prose"}">
+      <h3>${esc(p.title)}</h3>
+      <div class="byline">${esc(p.genre || "")}${p.byline ? " · " + esc(p.byline) : ""}</div>
+      ${body}
+    </article>`;
+  }
+  const passageText = (p) => [p.title].concat(p.text.map((t) => t.replace(/^## /, ""))).join(". ");
+
   // Highlights the unit a grade is currently studying in school (set via `focus` in the grade data).
   function focusBanner(g) {
     const f = C[g] && C[g].focus;
@@ -139,6 +162,8 @@
         <div class="card"><div class="big">✏️</div><h3>Quiz</h3><p>Up to 10 questions with explanations. Many math quizzes generate fresh problems every time.</p></div>
         <div class="card"><div class="big">⭐</div><h3>Earn stars</h3><p>Score 90% or better for 3 stars. Track progress for each child.</p></div>
       </div>
+      ${GRADES.some((g) => findSubject(g, "reading")) ? `<h2>📖 Reading Comprehension</h2>
+      <div class="grid">${GRADES.filter((g) => findSubject(g, "reading")).map((g) => { const r = findSubject(g, "reading"); return `<a class="card subject subject-reading" href="#/grade/${g}/reading"><div class="big">📖</div><h3>Grade ${g} Reading</h3><p>${r.units.filter((u) => u.passage).length} passages with questions, plus ${r.units.filter((u) => !u.passage).length} reading skills guides.</p></a>`; }).join("")}</div>` : ""}
       <h2>For parents</h2>
       <div class="grid">
         <a class="card" href="#/programs"><div class="big">🧭</div><h3>Programs &amp; Tracks</h3><p>How CCPS gifted services work, and the standard, honors, and gifted course options for grades 6–8.</p></a>
@@ -225,13 +250,16 @@
         ${ex ? `<span class="vex"><b>Example:</b> ${esc(ex)}</span>` : ""}
       </button>`).join("");
     const readText = [u.title, u.summary].concat(u.points || []).join(". ");
+    const hasPassage = !!u.passage;
+    const longOk = !hasPassage && !s.passageSubject && ((u.questions || []).length > QUIZ_LENGTH + 4 || u.gen);
     render(`
       ${crumbs([["Home", "#/"], [`Grade ${g}`, `#/grade/${g}`], [s.name, `#/grade/${g}/${sid}`], [u.title]])}
       <article class="learn">
         ${trackBadge(s)}
         <h1>${esc(u.title)}</h1>
         <p>${u.sol ? `<span class="tag">${esc(u.sol)}</span>` : ""}<span class="muted">${esc(u.summary)}</span> ${speakBtn(readText)}</p>
-        <h2>Key ideas</h2>
+        ${hasPassage ? `<h2>📄 Read the passage</h2><p class="muted">Read it carefully, then answer the questions. You can look back at the passage during the quiz. ${speakBtn(passageText(u.passage))}</p>${passageHtml(u.passage)}` : ""}
+        <h2>${esc(u.pointsTitle || "Key ideas")}</h2>
         <ul>${(u.points || []).map((p) => `<li>${esc(p)}</li>`).join("")}</ul>
         ${u.examples.length ? `<h2>${u.examples.length > 1 ? "Examples" : "Example"}</h2>${u.examples.map((ex) => `<div class="example">${esc(ex)}</div>`).join("")}` : ""}
         ${vocab ? `<h2>Vocabulary</h2>
@@ -239,8 +267,8 @@
           <button class="chip" type="button" data-action="flashcards"><span class="list-only">🃏 Practice as flashcards</span><span class="cards-only">📋 Show all definitions</span></button></p>
           <div class="vocab">${vocab}</div>` : ""}
         <div class="btn-row">
-          <a class="btn" href="#/quiz/${g}/${sid}/${u.id}">✏️ Take the quiz</a>
-          <a class="btn secondary" href="#/quiz/${g}/${sid}/${u.id}/long">📝 20-question practice</a>
+          <a class="btn" href="#/quiz/${g}/${sid}/${u.id}">${hasPassage ? "✏️ Answer the questions" : "✏️ Take the quiz"}</a>
+          ${longOk ? `<a class="btn secondary" href="#/quiz/${g}/${sid}/${u.id}/long">📝 20-question practice</a>` : ""}
           ${prev ? `<a class="btn secondary" href="#/learn/${g}/${sid}/${prev.id}">← ${esc(prev.title)}</a>` : ""}
           ${next ? `<a class="btn secondary" href="#/learn/${g}/${sid}/${next.id}">${esc(next.title)} →</a>` : ""}
         </div>
@@ -248,18 +276,18 @@
   }
 
   // Normalizes a question tuple [q, choices, answerIndex, explain] into a shuffled object.
-  function prepare(tuple, source) {
+  function prepare(tuple, source, passage) {
     const [q, choices, ans, explain] = tuple;
     const order = shuffle(choices.map((_, i) => i));
     return {
-      q, explain: explain || "", source,
+      q, explain: explain || "", source, passage,
       choices: order.map((i) => choices[i]),
       answer: order.indexOf(ans),
     };
   }
 
   function unitPool(u, generatedCount) {
-    const pool = (u.questions || []).map((t) => prepare(t, u.title));
+    const pool = (u.questions || []).map((t) => prepare(t, u.title, u.passage));
     const gens = u.gen ? [].concat(u.gen) : [];
     // Generated questions skip any answer already in this pool, so one quiz never repeats a word.
     const used = new Set(pool.map((q) => q.choices[q.answer]));
@@ -297,7 +325,7 @@
 
   function buildQuiz(g, sid, uid, len = QUIZ_LENGTH) {
     if (sid === "all") {
-      const units = C[g].subjects.filter((s) => !isAdvanced(s)).flatMap((s) => s.units);
+      const units = C[g].subjects.filter((s) => !isAdvanced(s) && !s.passageSubject).flatMap((s) => s.units);
       return shuffle(units).slice(0, 20).map((u) => shuffle(unitPool(u, 1))[0]).filter(Boolean);
     }
     const s = findSubject(g, sid);
@@ -309,6 +337,10 @@
       const picks = shuffle(units).flatMap((u) => shuffle(unitPool(u, 2)).slice(0, per));
       return dedupe(shuffle(picks)).slice(0, mix.size);
     }
+    if (uid === "all" && s.passageSubject) {
+      // Reading: pick two passages and ask all their questions, one passage at a time.
+      return shuffle(s.units.filter((u) => u.passage)).slice(0, 2).flatMap((u) => unitPool(u, 0));
+    }
     if (uid === "all") {
       const size = s.reviewSize || 15;
       const per = Math.ceil(size / s.units.length);
@@ -316,6 +348,7 @@
       return dedupe(shuffle(picks)).slice(0, size);
     }
     const u = findUnit(g, sid, uid);
+    if (u.passage) return unitPool(u, 0); // passage questions stay in reading order
     // Each unit quiz mixes written questions, a couple of vocabulary questions,
     // and (for units with generators) at least 3 freshly generated problems.
     const vocab = vocabQuestions(s, u.vocab, len > QUIZ_LENGTH ? VOCAB_PER_QUIZ * 2 : VOCAB_PER_QUIZ);
@@ -345,20 +378,24 @@
     let i = 0, correct = 0;
     const missed = [];
 
+    let passageOpen = true;
     function showQuestion() {
       const q = qs[i];
       render(`
         ${crumbs([["Home", "#/"], [`Grade ${g}`, `#/grade/${g}`]].concat(subj ? [[subj.name, `#/grade/${g}/${sid}`]] : []).concat([["Quiz"]]))}
-        <section class="quiz">
+        <section class="quiz${q.passage ? " wide" : ""}">
           <h1>✏️ ${esc(title)}</h1>
           <div class="muted">Question ${i + 1} of ${qs.length} · Score: ${correct}</div>
           <div class="progressbar"><div style="width:${(i / qs.length) * 100}%"></div></div>
+          ${q.passage ? `<details class="passage-panel"${passageOpen ? " open" : ""}><summary>📄 ${esc(q.passage.title)} <span class="muted">(tap to show or hide)</span></summary>${speakBtn(passageText(q.passage))}${passageHtml(q.passage)}</details>` : ""}
           <p class="question">${esc(q.q)}</p>
           <p>${speakBtn(q.q + ". " + q.choices.map((c, k) => "Choice " + "ABCD"[k] + ": " + c).join(". "))}</p>
           <div class="choices">${q.choices.map((c, k) => `<button class="choice" type="button" data-k="${k}"><b>${"ABCDEF"[k]}.</b> ${esc(c)}</button>`).join("")}</div>
           <div id="fb"></div>
         </section>`);
       app.querySelectorAll(".choice").forEach((b) => b.addEventListener("click", () => answer(Number(b.dataset.k))));
+      const panel = app.querySelector(".passage-panel");
+      if (panel) panel.addEventListener("toggle", () => { passageOpen = panel.open; });
     }
 
     function answer(k) {

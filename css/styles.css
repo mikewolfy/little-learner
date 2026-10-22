@@ -15,6 +15,7 @@
   --science: #15803d;
   --history: #9333ea;
   --unit1: #d97706;
+  --reading: #0d9488;
   --gifted: #7c3aed;
   --gifted-soft: #f3edff;
   --honors: #0e7490;
@@ -39,6 +40,7 @@
     --science: #4ade80;
     --history: #c084fc;
     --unit1: #fbbf24;
+    --reading: #2dd4bf;
     --gifted: #b69cff;
     --gifted-soft: #2a2140;
     --honors: #5ec8dc;
@@ -235,3 +237,29 @@ table.prog th, table.prog td { text-align: left; padding: 8px 6px; border-bottom
   h1 { font-size: 1.55rem; }
   .question { font-size: 1.12rem; }
 }
+
+/* ---------- Reading comprehension passages ---------- */
+.subject-reading { --sub: var(--reading); }
+.quiz.wide { max-width: 860px; }
+.passage {
+  background: var(--card); border: 1px solid var(--border); border-left: 5px solid var(--reading);
+  border-radius: 12px; padding: 14px 18px; margin: 10px 0 16px;
+  font-family: Georgia, "Times New Roman", serif; font-size: 1.06rem; line-height: 1.75;
+}
+.passage h3 { margin: 0 0 2px; font-family: system-ui, sans-serif; }
+.passage h4 { margin: 14px 0 2px; font-family: system-ui, sans-serif; font-size: 1rem; color: var(--reading); }
+.passage .byline { font-family: system-ui, sans-serif; font-size: 0.82rem; color: var(--muted); margin-bottom: 8px; }
+.passage p { margin: 0 0 0.7em; }
+.pnum {
+  display: inline-block; min-width: 1.3em; margin-right: 6px; font: 700 0.72rem/1.6 system-ui, sans-serif;
+  color: var(--reading); vertical-align: top; text-align: right;
+}
+.passage-poem .stanza { display: flex; gap: 8px; margin-bottom: 0.9em; }
+.passage-poem .stanza p { white-space: pre-line; margin: 0; }
+.passage-script .script-line { margin: 0 0 0.55em; }
+.passage-script em { color: var(--muted); }
+.passage-panel { margin: 10px 0 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--accent-soft); padding: 4px 12px 8px; }
+.passage-panel summary { cursor: pointer; font-weight: 700; padding: 8px 0; }
+.passage-panel .passage { max-height: 46vh; overflow-y: auto; margin-bottom: 4px; }
+.passage-panel .speak { margin: 0 0 4px; }
+@media (max-width: 560px) { .passage { font-size: 1rem; padding: 12px 14px; } .passage-panel .passage { max-height: 34vh; } }

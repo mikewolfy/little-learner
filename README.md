@@ -26,6 +26,10 @@ Practice for this unit lives in `data/grade3-unit1-more.js` (about 390 extra que
 
 To feature the next unit, copy that file, change the content, add a `<script>` tag for it in `index.html`, and set `focus` on the grade to point at the new section.
 
+## Reading comprehension (Grades 3 and 7)
+
+Each of these grades has a **Reading Comprehension** subject (`data/reading-grade3.js`, `data/reading-grade7.js`) with skills guides and original passages. A unit that has a `passage` shows the passage on its study page and keeps it beside every quiz question (with a show/hide toggle and a read-aloud button). Passage formats: `prose`, `poem`, `script`, and `steps`; a line starting with `## ` becomes a heading. To add a passage, copy an existing passage unit and replace its `passage`, `vocab`, and `questions`.
+
 ## Gifted, honors & programs
 
 - Each grade has a separate **🚀 Gifted & Advanced** section (`data/advanced.js`), styled differently from the standard curriculum. Grade 3 has challenge units, Grade 5 previews CCPS accelerated math (rational numbers and algebra) and gifted ELA, and Grade 7 has an Algebra I preview plus honors English and science.

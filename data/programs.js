@@ -19,6 +19,7 @@ window.PROGRAMS = {
     unit1: ["vdoeEnglish", "ccpsCurriculum"],
     math: ["vdoeMath", "ccpsCurriculum"],
     english: ["vdoeEnglish", "ccpsCurriculum"],
+    reading: ["vdoeEnglish", "ccpsCurriculum"],
     science: ["vdoeScience", "ccpsCurriculum"],
     history: ["vdoeHistory", "ccpsCurriculum"],
     advanced: ["ccpsGifted", "giftedPlan"],
