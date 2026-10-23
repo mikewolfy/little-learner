@@ -30,6 +30,10 @@ To feature the next unit, copy that file, change the content, add a `<script>` t
 
 Each of these grades has a **Reading Comprehension** subject (`data/reading-grade3.js`, `data/reading-grade7.js`) with skills guides and original passages. A unit that has a `passage` shows the passage on its study page and keeps it beside every quiz question (with a show/hide toggle and a read-aloud button). Passage formats: `prose`, `poem`, `script`, and `steps`; a line starting with `## ` becomes a heading. To add a passage, copy an existing passage unit and replace its `passage`, `vocab`, and `questions`.
 
+## Math Roadmap
+
+`data/math-roadmap.js` holds one page per branch of math (number sense, arithmetic, fractions/decimals/percents, geometry & measurement, ratios, pre-algebra, algebra, high school geometry, Algebra II, trigonometry, statistics & probability, precalculus, calculus, and college math), plus the typical Virginia course pathways. Pages are at `#/math-roadmap` and `#/math/<id>`; each has a summary, the big idea, what students learn, sample problems, key words, how the levels connect, readiness checks, parent tips, and links to practice on this site. Edit the data file to change any page; the pathway rows marked `verify` should be confirmed with the school.
+
 ## Math worksheets & tests (Grade 7)
 
 `js/worksheets.js` builds printable worksheets in the style of class handouts: one-step equations (balancing with a T-chart), riddle worksheets that decode a letter from each answer, two-step equations, integer operations, order of operations, percents, proportions, inequalities, and 20-question tests. Every sheet is built from a seed (`#/worksheet/7/<id>?s=<seed>`), so a link, a printout, and its answer key always match; **New worksheet** makes a fresh set. Answers are checked on screen with a "plug it back in" hint, and scores show on My Progress. `js/equations.js` is the shared engine that makes each equation with its worked steps. Grade 7 Math also has study units for one-step equations (`data/math7-equations.js`) with auto-generated quizzes and a 20-question Equations Test.

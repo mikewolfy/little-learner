@@ -7,6 +7,9 @@
   const P = window.PROGRAMS || { links: {}, subjectLinks: {}, gradeLinks: {} };
   const X = window.EXTRAS || {};
   const WS = window.WORKSHEETS || { defs: {}, groups: [] };
+  const MR = window.MATH_ROADMAP || { stages: [], topics: [], links: {}, pathways: { head: [], rows: [] }, strands: [] };
+  const mrTopic = (id) => MR.topics.find((t) => t.id === id);
+  const MR_HERE = { 3: "arithmetic", 5: "fractions-decimals", 7: "pre-algebra" };   // where each grade sits on the roadmap
   const GRADES = Object.keys(C).map(Number).sort((a, b) => a - b);
   const QUIZ_LENGTH = 10;
   const LONG_LENGTH = 20;
@@ -167,6 +170,11 @@
       <div class="grid">${GRADES.filter((g) => findSubject(g, "reading")).map((g) => { const r = findSubject(g, "reading"); return `<a class="card subject subject-reading" href="#/grade/${g}/reading"><div class="big">📖</div><h3>Grade ${g} Reading</h3><p>${r.units.filter((u) => u.passage).length} passages with questions, plus ${r.units.filter((u) => !u.passage).length} reading skills guides.</p></a>`; }).join("")}</div>` : ""}
       ${Object.keys(WS.defs).length ? `<h2>📝 Math Worksheets &amp; Tests</h2>
       <div class="grid">${Object.keys(WS.defs).map((g) => `<a class="card subject subject-math" href="#/worksheets/${g}"><div class="big">📝</div><h3>Grade ${g} Math Worksheets</h3><p>${WS.defs[g].length} printable sheets: one-step equations, riddle worksheets, two-step equations, integers, percents, and mixed tests.</p></a>`).join("")}</div>` : ""}
+      ${MR.topics.length ? `<h2>🧭 The Math Roadmap</h2>
+      <div class="grid">
+        <a class="card topic-card featured" href="#/math-roadmap"><div class="topic-top"><span class="big">🧭</span></div><h3>From counting to calculus</h3><p>Every level of math from kindergarten through college: arithmetic, algebra, geometry, trigonometry, calculus, and more, each with a plain-English summary.</p></a>
+        ${mrTopic("algebra") ? mrCard(mrTopic("algebra")) : ""}
+      </div>` : ""}
       <h2>For parents</h2>
       <div class="grid">
         <a class="card" href="#/programs"><div class="big">🧭</div><h3>Programs &amp; Tracks</h3><p>How CCPS gifted services work, and the standard, honors, and gifted course options for grades 6–8.</p></a>
@@ -230,6 +238,7 @@
       ${crumbs([["Home", "#/"], [`Grade ${g}`, `#/grade/${g}`], [s.name]])}
       ${trackBadge(s)}
       <h1>${s.icon} Grade ${g} ${esc(s.name)}</h1>
+      ${sid === "math" && MR_HERE[g] && mrTopic(MR_HERE[g]) ? `<div class="callout">🧭 <b>Where this fits in the Math Roadmap:</b> Grade ${g} math is mostly <a href="#/math/${MR_HERE[g]}">${esc(mrTopic(MR_HERE[g]).title)}</a>${g === 7 ? `, the bridge to <a href="#/math/algebra">Algebra</a>` : ""}. <a href="#/math-roadmap">See the whole roadmap →</a></div>` : ""}
       <p class="muted">${esc(s.about || "")} <span class="tag">${esc(s.standards)}</span></p>
       <ul class="unit-list${isAdvanced(s) ? " advanced" : ""}">${rows}</ul>
       <div class="btn-row">
@@ -553,10 +562,96 @@
       <p>${esc(ms.honorsNote)}</p>
       <div class="card note">⚠️ ${esc(ms.socialStudiesNote)}</div>
       <h3>Math pathways</h3>
+      <p class="muted">Want the big picture from counting to calculus? See the <a href="#/math-roadmap">Math Roadmap</a>.</p>
       <div class="lanes">${lanes}</div>
       ${grades}
       <p class="muted" style="font-size:.9rem">Items marked <span class="verify">check with school</span> came from the course list but not from an official description, so confirm them with your school counselor.</p>
       ${resourceCard(["programOfStudies", "ccpsCurriculum", "ccpsGifted", "giftedPlan", "ccpsSummer"], "Official CCPS documents")}`);
+  }
+
+  // ---------- math roadmap ----------
+  const mrCard = (t) => `<a class="card topic-card${t.featured ? " featured" : ""}" href="#/math/${t.id}">
+      <div class="topic-top"><span class="big">${t.icon}</span><span class="tag">${esc(t.grades)}</span></div>
+      <h3>${esc(t.title)}</h3><p>${esc(t.tagline)}</p>${t.featured ? `<p class="feat-note">⭐ Includes the Grade 7 algebra deep-dive</p>` : ""}</a>`;
+  const mrTable = (tb) => `<div class="table-wrap"><table class="prog roadtable"><thead><tr>${tb.head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${tb.rows.map((r) => `<tr>${r.map((c, i) => i === 0 ? `<th scope="row">${esc(c)}</th>` : `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+
+  function viewMathRoadmap() {
+    const here = Object.entries(MR_HERE).map(([g, id]) => { const t = mrTopic(id); return t ? `<li><b>Grade ${g}:</b> <a href="#/math/${id}">${esc(t.title)}</a>${g === "7" ? ` · heading toward <a href="#/math/algebra">Algebra</a>` : ""}</li>` : ""; }).join("");
+    const pw = MR.pathways;
+    render(`
+      ${crumbs([["Home", "#/"], ["Math Roadmap"]])}
+      <h1>🧭 The Math Roadmap</h1>
+      <p class="lead">Math isn't one subject. It's a staircase of connected branches, each one built on the one before. Here is every major level, from counting in kindergarten to calculus and beyond, with a plain-English summary, sample problems, and what comes next.</p>
+      <section class="card here-card"><h3>Where our learners are now</h3><ul>${here}</ul>
+        <p class="muted">Click any card below to see what a level covers, the key words, sample problems, and how to tell when a child is ready for the next step.</p></section>
+
+      <h2>The five big strands</h2>
+      <p class="muted">Every course you see on a report card (Algebra, Geometry, Calculus…) is one of these ideas at a different level.</p>
+      <div class="grid">${MR.strands.map((x) => `<div class="card"><div class="big">${x.icon}</div><h3>${esc(x.name)}</h3><p>${esc(x.text)}</p></div>`).join("")}</div>
+
+      ${MR.stages.map((st) => `<section class="mr-stage mr-${st.id}"><div class="mr-stage-head"><h2>${esc(st.title)}</h2><span class="tag">${esc(st.grades)}</span></div>
+        <p class="muted">${esc(st.blurb)}</p><div class="grid">${MR.topics.filter((t) => t.stage === st.id).map(mrCard).join("")}</div></section>`).join("")}
+
+      <h2>Typical course pathways in Virginia</h2>
+      <p class="muted">Which course a student takes each year depends on their school and readiness. This shows the usual lanes.</p>
+      <div class="table-wrap"><table class="prog roadtable pathways"><thead><tr>${pw.head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead>
+        <tbody>${pw.rows.map((r) => `<tr><th scope="row">${esc(r.name)}${r.verify ? ` <span class="verify" title="Not confirmed on an official CCPS page. Check with your school.">check with school</span>` : ""}</th>${r.cells.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+      <p class="muted" style="font-size:.92rem">${esc(pw.note)} See <a href="#/programs">Programs &amp; Tracks</a> and the <a href="https://www.oneccps.org/curriculum-information/" target="_blank" rel="noopener">CCPS Curriculum Information ↗</a> page.</p>
+      ${resourceCard(["vdoeMath", "programOfStudies", "ccpsCurriculum"], "Official math resources")}`);
+  }
+
+  function viewMathTopic(id) {
+    const t = mrTopic(id);
+    if (!t) return viewNotFound();
+    const i = MR.topics.indexOf(t), prev = MR.topics[i - 1], next = MR.topics[i + 1];
+    const lk = MR.links[id] || { from: [], to: [] };
+    const chips = (ids) => ids.length ? ids.map((x) => { const o = mrTopic(x); return o ? `<a class="chip" href="#/math/${x}">${o.icon} ${esc(o.title)}</a>` : ""; }).join(" ") : `<span class="muted">Nothing: this is where math begins.</span>`;
+    const stage = MR.stages.find((s) => s.id === t.stage);
+    const here = Object.entries(MR_HERE).filter(([, tid]) => tid === id).map(([g]) => `Grade ${g}`);
+    render(`
+      ${crumbs([["Home", "#/"], ["Math Roadmap", "#/math-roadmap"], [t.title]])}
+      <article class="topic-page">
+        <header class="topic-head">
+          <div class="topic-icon" aria-hidden="true">${t.icon}</div>
+          <div><h1>${esc(t.title)}</h1>
+            <p class="topic-tags"><span class="tag">${esc(t.grades)}</span> <span class="tag">${esc(stage.title)}</span>${here.length ? ` <span class="tag here">📍 ${esc(here.join(" & "))} is here</span>` : ""}</p>
+            <p class="muted">${esc(t.tagline)}</p></div>
+        </header>
+        <p class="lead">${esc(t.summary)}</p>
+        <div class="callout"><b>💡 The big idea:</b> ${esc(t.bigIdea)}</div>
+
+        <h2>What students learn</h2>
+        <ul class="learn-list">${t.learn.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+
+        ${(t.extras || []).map((e) => `<h2>${esc(e.title)}</h2>${e.text ? `<p>${esc(e.text)}</p>` : ""}${e.table ? mrTable(e.table) : ""}`).join("")}
+
+        <h2>Try a few problems</h2>
+        <p class="muted">Think it through, then tap to see the answer and how to get it.</p>
+        <div class="try-list">${t.examples.map((ex) => `<details class="try"><summary>${esc(ex.q)}</summary><div class="try-ans"><b>Answer: ${esc(ex.a)}</b><div class="muted">${esc(ex.how)}</div></div></details>`).join("")}</div>
+
+        <h2>Key words</h2>
+        <div class="vocab">${t.vocab.map(([w, d, ex]) => `<div class="vcard"><span class="term">${esc(w)}</span><span class="def">${esc(d)}</span><span class="vex"><b>Example:</b> ${esc(ex)}</span></div>`).join("")}</div>
+
+        <h2>Where you'll use it</h2>
+        <ul class="use-list">${t.useIn.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+
+        <h2>How it connects</h2>
+        <div class="connect"><div><div class="muted">Builds on</div>${chips(lk.from)}</div><div class="arrow-big" aria-hidden="true">➜</div><div><div class="muted">This level</div><span class="chip current">${t.icon} ${esc(t.title)}</span></div><div class="arrow-big" aria-hidden="true">➜</div><div><div class="muted">Leads to</div>${chips(lk.to)}</div></div>
+
+        <div class="two-col">
+          <section class="card"><h3>✅ Is your child ready?</h3><ul>${t.ready.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></section>
+          <section class="card"><h3>👪 Tips for parents</h3><ul>${t.tips.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></section>
+        </div>
+
+        <h2>Practice on this site</h2>
+        ${t.onSite.length ? `<ul class="onsite">${t.onSite.map((l) => `<li><a href="${esc(l.href)}">${esc(l.label)}</a></li>`).join("")}</ul>` : `<p class="muted">This site currently covers Grades 3, 5, and 7, so there is no practice for this level yet. See the levels that lead up to it to make sure the foundation is strong.</p>`}
+
+        <div class="btn-row">
+          ${prev ? `<a class="btn secondary" href="#/math/${prev.id}">← ${esc(prev.title)}</a>` : ""}
+          <a class="btn secondary" href="#/math-roadmap">🧭 Roadmap</a>
+          ${next ? `<a class="btn" href="#/math/${next.id}">${esc(next.title)} →</a>` : ""}
+        </div>
+      </article>`);
   }
 
   // ---------- worksheets ----------
@@ -733,6 +828,8 @@
     if (view === "progress") return viewProgress();
     if (view === "vocab") return viewVocab(Number(a));
     if (view === "programs") return viewPrograms();
+    if (view === "math-roadmap") return viewMathRoadmap();
+    if (view === "math") return viewMathTopic(a);
     if (view === "worksheets") return viewWorksheetList(Number(a));
     if (view === "worksheet") return viewWorksheet(Number(a), b, params);
     viewNotFound();
