@@ -353,3 +353,21 @@ table.prog th, table.prog td { text-align: left; padding: 8px 6px; border-bottom
 .two-col ul { margin: 6px 0 0; padding-left: 1.2em; }
 .onsite li { margin: 5px 0; }
 @media (max-width: 560px) { .topic-icon { width: 60px; height: 60px; font-size: 2.2rem; } .arrow-big { transform: rotate(90deg); } }
+
+/* ---------- Roadmap deep dives ---------- */
+.mr-family { --stage: #d97706; background: var(--accent-soft); }
+.deep { display: grid; gap: 14px; }
+.deep-card h3 { margin: 0 0 6px; display: flex; align-items: center; gap: 8px; }
+.deep-icon { display: inline-flex; width: 34px; height: 34px; align-items: center; justify-content: center; background: var(--accent-soft); border-radius: 10px; font-size: 1.15rem; flex: none; }
+.deep-rules { margin: 6px 0 10px; padding-left: 1.2em; }
+.deep-rules li { margin: 3px 0; }
+.worked { background: var(--accent-soft); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+.worked-q { margin-bottom: 4px; }
+.worked-steps { margin: 4px 0 6px; padding-left: 1.4em; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.95rem; }
+.worked-steps li { margin: 3px 0; }
+.worked-a { color: var(--good); }
+.mistake { background: var(--bad-soft); border-radius: 10px; padding: 8px 14px; margin: 8px 0; }
+.mistake .wrong { text-decoration: line-through; text-decoration-color: var(--bad); }
+.mistake .to { color: var(--muted); margin: 0 4px; }
+.mistake .right { color: var(--good); font-weight: 600; }
+.deep-practice { font-size: 0.93rem; margin-top: 6px; }

@@ -173,6 +173,7 @@
       ${MR.topics.length ? `<h2>🧭 The Math Roadmap</h2>
       <div class="grid">
         <a class="card topic-card featured" href="#/math-roadmap"><div class="topic-top"><span class="big">🧭</span></div><h3>From counting to calculus</h3><p>Every level of math from kindergarten through college: arithmetic, algebra, geometry, trigonometry, calculus, and more, each with a plain-English summary.</p></a>
+        ${mrTopic("pre-algebra") ? mrCard(mrTopic("pre-algebra")) : ""}
         ${mrTopic("algebra") ? mrCard(mrTopic("algebra")) : ""}
       </div>` : ""}
       <h2>For parents</h2>
@@ -238,7 +239,7 @@
       ${crumbs([["Home", "#/"], [`Grade ${g}`, `#/grade/${g}`], [s.name]])}
       ${trackBadge(s)}
       <h1>${s.icon} Grade ${g} ${esc(s.name)}</h1>
-      ${sid === "math" && MR_HERE[g] && mrTopic(MR_HERE[g]) ? `<div class="callout">🧭 <b>Where this fits in the Math Roadmap:</b> Grade ${g} math is mostly <a href="#/math/${MR_HERE[g]}">${esc(mrTopic(MR_HERE[g]).title)}</a>${g === 7 ? `, the bridge to <a href="#/math/algebra">Algebra</a>` : ""}. <a href="#/math-roadmap">See the whole roadmap →</a></div>` : ""}
+      ${sid === "math" && MR_HERE[g] && mrTopic(MR_HERE[g]) ? `<div class="callout">🧭 <b>Where this fits in the Math Roadmap:</b> Grade ${g} math is mostly <a href="#/math/${MR_HERE[g]}">${esc(mrTopic(MR_HERE[g]).title)}</a>${g === 7 ? `, the bridge to <a href="#/math/algebra-1">Algebra I</a> (see also <a href="#/math/algebra">the big picture of algebra</a>)` : ""}. <a href="#/math-roadmap">See the whole roadmap →</a></div>` : ""}
       <p class="muted">${esc(s.about || "")} <span class="tag">${esc(s.standards)}</span></p>
       <ul class="unit-list${isAdvanced(s) ? " advanced" : ""}">${rows}</ul>
       <div class="btn-row">
@@ -572,11 +573,11 @@
   // ---------- math roadmap ----------
   const mrCard = (t) => `<a class="card topic-card${t.featured ? " featured" : ""}" href="#/math/${t.id}">
       <div class="topic-top"><span class="big">${t.icon}</span><span class="tag">${esc(t.grades)}</span></div>
-      <h3>${esc(t.title)}</h3><p>${esc(t.tagline)}</p>${t.featured ? `<p class="feat-note">⭐ Includes the Grade 7 algebra deep-dive</p>` : ""}</a>`;
+      <h3>${esc(t.title)}</h3><p>${esc(t.tagline)}</p>${t.featured ? `<p class="feat-note">${esc(t.featNote || "⭐ Featured")}</p>` : ""}</a>`;
   const mrTable = (tb) => `<div class="table-wrap"><table class="prog roadtable"><thead><tr>${tb.head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${tb.rows.map((r) => `<tr>${r.map((c, i) => i === 0 ? `<th scope="row">${esc(c)}</th>` : `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 
   function viewMathRoadmap() {
-    const here = Object.entries(MR_HERE).map(([g, id]) => { const t = mrTopic(id); return t ? `<li><b>Grade ${g}:</b> <a href="#/math/${id}">${esc(t.title)}</a>${g === "7" ? ` · heading toward <a href="#/math/algebra">Algebra</a>` : ""}</li>` : ""; }).join("");
+    const here = Object.entries(MR_HERE).map(([g, id]) => { const t = mrTopic(id); return t ? `<li><b>Grade ${g}:</b> <a href="#/math/${id}">${esc(t.title)}</a>${g === "7" ? ` · heading toward <a href="#/math/algebra-1">Algebra I</a>` : ""}</li>` : ""; }).join("");
     const pw = MR.pathways;
     render(`
       ${crumbs([["Home", "#/"], ["Math Roadmap"]])}
@@ -589,6 +590,10 @@
       <p class="muted">Every course you see on a report card (Algebra, Geometry, Calculus…) is one of these ideas at a different level.</p>
       <div class="grid">${MR.strands.map((x) => `<div class="card"><div class="big">${x.icon}</div><h3>${esc(x.name)}</h3><p>${esc(x.text)}</p></div>`).join("")}</div>
 
+      ${["algebra", "pre-algebra", "algebra-1", "algebra-2"].every((x) => mrTopic(x)) ? `<section class="mr-stage mr-family"><div class="mr-stage-head"><h2>🔤 The Algebra family</h2><span class="tag">Grades 6–11</span></div>
+        <p class="muted">Algebra is taught in three stages, and each has its own full page with step-by-step examples. Grade 7 is in <b>Pre-Algebra</b> right now.</p>
+        <div class="grid">${["algebra", "pre-algebra", "algebra-1", "algebra-2"].map((x) => mrCard(mrTopic(x))).join("")}</div></section>` : ""}
+
       ${MR.stages.map((st) => `<section class="mr-stage mr-${st.id}"><div class="mr-stage-head"><h2>${esc(st.title)}</h2><span class="tag">${esc(st.grades)}</span></div>
         <p class="muted">${esc(st.blurb)}</p><div class="grid">${MR.topics.filter((t) => t.stage === st.id).map(mrCard).join("")}</div></section>`).join("")}
 
@@ -599,6 +604,20 @@
       <p class="muted" style="font-size:.92rem">${esc(pw.note)} See <a href="#/programs">Programs &amp; Tracks</a> and the <a href="https://www.oneccps.org/curriculum-information/" target="_blank" rel="noopener">CCPS Curriculum Information ↗</a> page.</p>
       ${resourceCard(["vdoeMath", "programOfStudies", "ccpsCurriculum"], "Official math resources")}`);
   }
+
+  const deepHtml = (t) => !(t.deepDive && t.deepDive.length) ? "" : `
+        <h2>Topic-by-topic breakdown</h2>
+        <p class="muted">Every skill below has a plain-English description, a worked example, and the mistake to watch for.</p>
+        <div class="deep">${t.deepDive.map((d, i) => `<section class="card deep-card">
+          <h3><span class="deep-icon" aria-hidden="true">${esc(d.icon || "")}</span> ${i + 1}. ${esc(d.title)}</h3>
+          <p>${esc(d.desc)}</p>
+          ${d.rules ? `<ul class="deep-rules">${d.rules.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>` : ""}
+          <div class="worked"><div class="worked-q"><b>Example:</b> ${esc(d.example.q)}</div>
+            <ol class="worked-steps">${d.example.steps.map((st) => `<li>${esc(st)}</li>`).join("")}</ol>
+            <div class="worked-a">Answer: <b>${esc(d.example.a)}</b></div></div>
+          <div class="mistake">⚠️ <b>Common mistake:</b> <span class="wrong">${esc(d.mistake.wrong)}</span> <span class="to">→</span> <span class="right">${esc(d.mistake.right)}</span></div>
+          ${d.practice && d.practice.length ? `<div class="deep-practice"><b>Practice:</b> ${d.practice.map((l) => `<a href="${esc(l.href)}">${esc(l.label)}</a>`).join(" · ")}</div>` : ""}
+        </section>`).join("")}</div>`;
 
   function viewMathTopic(id) {
     const t = mrTopic(id);
@@ -624,6 +643,7 @@
         <ul class="learn-list">${t.learn.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
 
         ${(t.extras || []).map((e) => `<h2>${esc(e.title)}</h2>${e.text ? `<p>${esc(e.text)}</p>` : ""}${e.table ? mrTable(e.table) : ""}`).join("")}
+        ${deepHtml(t)}
 
         <h2>Try a few problems</h2>
         <p class="muted">Think it through, then tap to see the answer and how to get it.</p>

@@ -32,7 +32,7 @@ Each of these grades has a **Reading Comprehension** subject (`data/reading-grad
 
 ## Math Roadmap
 
-`data/math-roadmap.js` holds one page per branch of math (number sense, arithmetic, fractions/decimals/percents, geometry & measurement, ratios, pre-algebra, algebra, high school geometry, Algebra II, trigonometry, statistics & probability, precalculus, calculus, and college math), plus the typical Virginia course pathways. Pages are at `#/math-roadmap` and `#/math/<id>`; each has a summary, the big idea, what students learn, sample problems, key words, how the levels connect, readiness checks, parent tips, and links to practice on this site. Edit the data file to change any page; the pathway rows marked `verify` should be confirmed with the school.
+`data/math-roadmap.js` holds one page per branch of math (number sense, arithmetic, fractions/decimals/percents, geometry & measurement, ratios, pre-algebra, algebra, high school geometry, Algebra II, trigonometry, statistics & probability, precalculus, calculus, and college math), plus the typical Virginia course pathways. Pages are at `#/math-roadmap` and `#/math/<id>`; each has a summary, the big idea, what students learn, sample problems, key words, how the levels connect, readiness checks, parent tips, and links to practice on this site. The algebra family (`data/math-roadmap-algebra.js`) has four pages (Algebra: The Big Picture, Pre-Algebra, Algebra I, Algebra II), each with a topic-by-topic `deepDive`: a description, a worked step-by-step example, and a common mistake for every skill. Edit the data file to change any page; the pathway rows marked `verify` should be confirmed with the school.
 
 ## Math worksheets & tests (Grade 7)
 
