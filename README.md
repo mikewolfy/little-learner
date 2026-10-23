@@ -30,6 +30,15 @@ To feature the next unit, copy that file, change the content, add a `<script>` t
 
 Each of these grades has a **Reading Comprehension** subject (`data/reading-grade3.js`, `data/reading-grade7.js`) with skills guides and original passages. A unit that has a `passage` shows the passage on its study page and keeps it beside every quiz question (with a show/hide toggle and a read-aloud button). Passage formats: `prose`, `poem`, `script`, and `steps`; a line starting with `## ` becomes a heading. To add a passage, copy an existing passage unit and replace its `passage`, `vocab`, and `questions`.
 
+## Bonus quizzes
+
+Every study unit (except the passage units) has **🎁 Bonus quizzes**: extra questions that test new facts and new numbers, not repeats of the regular quiz. They appear on each unit's study page, in the subject lists, on the grade page (**🎁 Bonus quizzes** button), and on the home page. Each bonus quiz has 10 questions and its own stars on My Progress. A 🔤 **Vocabulary & Examples** quiz built from the unit's vocabulary is added at the end of each list.
+
+- `js/bonus-core.js` is the engine. Questions are written in a compact line format, right answer first: `question | right | wrong | wrong | => short explanation` (`{nl}` makes a line break; true/false uses two choices). Math units can also use seeded templates (`BONUS.tpl(key, fn, n)`) that compute every answer, so the numbers are different in every quiz but always the same for a given quiz.
+- The data lives in `data/bonus-g3-*.js`, `bonus-g5-*.js`, and `bonus-g7-*.js`. Keys look like `"7/math/slope"` (grade/subject/unit). Banks are de-duplicated, shuffled the same way every time, and cut into quizzes of 10 by the app; questions identical to a regular unit question are skipped.
+- Grade 3 Unit 1 (the featured unit) has the largest banks: about 225 to 425 questions per skill (22 to 29 quizzes each).
+- The Reading Comprehension passage units get new content instead: `data/reading-bonus-grade3.js` and `data/reading-bonus-grade7.js` add ten new passages for each grade.
+
 ## Math Roadmap
 
 `data/math-roadmap.js` holds one page per branch of math (number sense, arithmetic, fractions/decimals/percents, geometry & measurement, ratios, pre-algebra, algebra, high school geometry, Algebra II, trigonometry, statistics & probability, precalculus, calculus, and college math), plus the typical Virginia course pathways. Pages are at `#/math-roadmap` and `#/math/<id>`; each has a summary, the big idea, what students learn, sample problems, key words, how the levels connect, readiness checks, parent tips, and links to practice on this site. The algebra family (`data/math-roadmap-algebra.js`) has four pages (Algebra: The Big Picture, Pre-Algebra, Algebra I, Algebra II), each with a topic-by-topic `deepDive`: a description, a worked step-by-step example, and a common mistake for every skill. Edit the data file to change any page; the pathway rows marked `verify` should be confirmed with the school.
