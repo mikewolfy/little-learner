@@ -7,6 +7,7 @@
   const P = window.PROGRAMS || { links: {}, subjectLinks: {}, gradeLinks: {} };
   const X = window.EXTRAS || {};
   const WS = window.WORKSHEETS || { defs: {}, groups: [] };
+  const BONUS = window.BONUS;
   const MR = window.MATH_ROADMAP || { stages: [], topics: [], links: {}, pathways: { head: [], rows: [] }, strands: [] };
   const mrTopic = (id) => MR.topics.find((t) => t.id === id);
   const MR_HERE = { 3: "arithmetic", 5: "fractions-decimals", 7: "pre-algebra" };   // where each grade sits on the roadmap
@@ -168,6 +169,8 @@
       </div>
       ${GRADES.some((g) => findSubject(g, "reading")) ? `<h2>📖 Reading Comprehension</h2>
       <div class="grid">${GRADES.filter((g) => findSubject(g, "reading")).map((g) => { const r = findSubject(g, "reading"); return `<a class="card subject subject-reading" href="#/grade/${g}/reading"><div class="big">📖</div><h3>Grade ${g} Reading</h3><p>${r.units.filter((u) => u.passage).length} passages with questions, plus ${r.units.filter((u) => !u.passage).length} reading skills guides.</p></a>`; }).join("")}</div>` : ""}
+      <h2>🎁 Bonus Quizzes</h2>
+      <div class="grid">${GRADES.map((g) => `<a class="card subject subject-unit1" href="#/bonus/${g}"><div class="big">🎁</div><h3>Grade ${g} Bonus Quizzes</h3><p>Extra quizzes on every unit with brand-new questions.</p></a>`).join("")}</div>
       ${Object.keys(WS.defs).length ? `<h2>📝 Math Worksheets &amp; Tests</h2>
       <div class="grid">${Object.keys(WS.defs).map((g) => `<a class="card subject subject-math" href="#/worksheets/${g}"><div class="big">📝</div><h3>Grade ${g} Math Worksheets</h3><p>${WS.defs[g].length} printable sheets: one-step equations, riddle worksheets, two-step equations, integers, percents, and mixed tests.</p></a>`).join("")}</div>` : ""}
       ${MR.topics.length ? `<h2>🧭 The Math Roadmap</h2>
@@ -208,6 +211,7 @@
         <a class="btn" href="#/quiz/${g}/all/all">🎯 Mixed review: all subjects</a>
         <a class="btn secondary" href="#/vocab/${g}">📒 Grade ${g} vocabulary (${vocabCount(g)} words)</a>
         ${WS.defs[g] ? `<a class="btn secondary" href="#/worksheets/${g}">📝 Math worksheets &amp; tests</a>` : ""}
+        <a class="btn secondary" href="#/bonus/${g}">🎁 Bonus quizzes</a>
       </div>
       ${advanced.length ? `<section class="track-advanced">
         <div class="track-badge">🚀 Gifted &amp; Advanced Track</div>
@@ -227,6 +231,7 @@
         <div class="info">
           <a href="#/learn/${g}/${sid}/${u.id}">${i + 1}. ${esc(u.title)}</a>
           <div class="muted" style="font-size:.9rem">${u.sol ? `<span class="tag">${esc(u.sol)}</span>` : ""}${esc(u.summary)}</div>
+          ${(() => { const bl = bonusQuizList(g, sid, u.id); return bl.length ? `<a class="bonus-note" href="#/learn/${g}/${sid}/${u.id}">🎁 ${bl.length} bonus quizzes · ${bonusTried(g, sid, u.id, bl)} tried</a>` : ""; })()}
         </div>
         <div class="actions">
           ${stars(bestFor(key))}
@@ -281,6 +286,7 @@
           <p class="muted vocab-help"><span class="list-only">Read each word, what it means, and an example.</span><span class="cards-only">Say what each word means, then tap the card to check.</span>
           <button class="chip" type="button" data-action="flashcards"><span class="list-only">🃏 Practice as flashcards</span><span class="cards-only">📋 Show all definitions</span></button></p>
           <div class="vocab">${vocab}</div>` : ""}
+        ${bonusSection(g, sid, u)}
         <div class="btn-row">
           <a class="btn" href="#/quiz/${g}/${sid}/${u.id}">${hasPassage ? "✏️ Answer the questions" : "✏️ Take the quiz"}</a>
           ${longOk ? `<a class="btn secondary" href="#/quiz/${g}/${sid}/${u.id}/long">📝 20-question practice</a>` : ""}
@@ -384,12 +390,15 @@
     if (sid !== "all" && uid !== "all" && uid !== "vocab" && !isMix && !findUnit(g, sid, uid)) return viewNotFound();
 
     const long = mode === "long";
+    const bonusList = mode && /^bonus-\d+$/.test(mode) ? bonusQuizList(g, sid, uid) : null;
+    const bonusQ = bonusList && bonusList.find((q) => q.id === mode);
+    if (bonusList && !bonusQ) return viewNotFound();
     const subj = sid === "all" ? null : findSubject(g, sid);
     const unit = subj && uid !== "all" && uid !== "vocab" && !isMix ? findUnit(g, sid, uid) : null;
-    const title = unit ? unit.title + (long ? " (long practice)" : "") : mix ? mix.label.replace(/^\S+\s/, "") : subj ? `${subj.name}: ${uid === "vocab" ? "Vocabulary" : "Mixed Review"}` : `Grade ${g}: Mixed Review`;
-    const key = `${g}/${sid}/${uid}`;
+    const title = unit ? unit.title + (long ? " (long practice)" : bonusQ ? `: ${bonusQ.label}` : "") : mix ? mix.label.replace(/^\S+\s/, "") : subj ? `${subj.name}: ${uid === "vocab" ? "Vocabulary" : "Mixed Review"}` : `Grade ${g}: Mixed Review`;
+    const key = bonusQ ? bonusKey(g, sid, uid, mode) : `${g}/${sid}/${uid}`;
     const back = unit ? `#/learn/${g}/${sid}/${uid}` : subj ? `#/grade/${g}/${sid}` : `#/grade/${g}`;
-    const qs = buildQuiz(g, sid, uid, long ? LONG_LENGTH : QUIZ_LENGTH);
+    const qs = bonusQ ? shuffle(bonusQ.items).map((t) => prepare(t, "Bonus")) : buildQuiz(g, sid, uid, long ? LONG_LENGTH : QUIZ_LENGTH);
     let i = 0, correct = 0;
     const missed = [];
 
@@ -457,7 +466,8 @@
           </div>
           ${missed.length ? `<h2>Review what you missed</h2>${review}` : ""}
           <div class="btn-row">
-            <a class="btn" href="#/quiz/${g}/${sid}/${uid}${long ? "/long" : ""}?r=${Date.now()}">🔁 Try again (new questions)</a>
+            ${bonusQ && bonusList[bonusQ.n] ? `<a class="btn" href="#/quiz/${g}/${sid}/${uid}/${bonusList[bonusQ.n].id}">➡️ Next: ${esc(bonusList[bonusQ.n].label)}</a>` : ""}
+            <a class="btn${bonusQ && bonusList[bonusQ.n] ? " secondary" : ""}" href="#/quiz/${g}/${sid}/${uid}${long ? "/long" : bonusQ ? "/" + mode : ""}?r=${Date.now()}">${bonusQ ? "🔁 Retry this bonus quiz" : "🔁 Try again (new questions)"}</a>
             <a class="btn secondary" href="${back}">${unit ? "📖 Back to study guide" : "← Back"}</a>
           </div>
         </section>`);
@@ -483,6 +493,12 @@
       const [g, , id] = k.split("/"), sc = scores[k], d = ((WS.defs[g] || []).find((x) => x.id === id));
       if (!d) return "";
       return `<tr><td>Grade ${g}</td><td>📝 Worksheet</td><td><a href="#/worksheet/${g}/${id}">${esc(d.title)}</a></td>
+        <td>${stars(sc.best)} ${sc.best}%</td><td>${sc.last}%</td><td>${sc.attempts}</td><td>${sc.date}</td></tr>`;
+    }).join("") + Object.keys(scores).filter((k) => /\/bonus-\d+$/.test(k)).map((k) => {
+      const [g, sid, uid, bid] = k.split("/"), sc = scores[k], u = findUnit(Number(g), sid, uid);
+      if (!u) return "";
+      const q = bonusQuizList(Number(g), sid, uid).find((x) => x.id === bid);
+      return `<tr><td>Grade ${g}</td><td>🎁 Bonus</td><td><a href="#/quiz/${g}/${sid}/${uid}/${bid}">${esc(u.title)}: ${esc(q ? q.label : bid)}</a></td>
         <td>${stars(sc.best)} ${sc.best}%</td><td>${sc.last}%</td><td>${sc.attempts}</td><td>${sc.date}</td></tr>`;
     }).join("");
     render(`
@@ -568,6 +584,80 @@
       ${grades}
       <p class="muted" style="font-size:.9rem">Items marked <span class="verify">check with school</span> came from the course list but not from an official description, so confirm them with your school counselor.</p>
       ${resourceCard(["programOfStudies", "ccpsCurriculum", "ccpsGifted", "giftedPlan", "ccpsSummer"], "Official CCPS documents")}`);
+  }
+
+  // ---------- bonus quizzes ----------
+  const BONUS_SIZE = 10, BONUS_MAX = 300;
+  const bonusCache = {};
+  const shufR = (r, arr) => BONUS.T.shuf(r, arr);
+
+  // "Vocabulary & Examples" quiz built from the unit's own vocabulary (definitions, examples, true/false).
+  function bonusVocabTuples(s, u) {
+    const r = BONUS.rngFrom(BONUS.hash(`${s.id}/${u.id}/vocab`));
+    const pool = s.units.flatMap((x) => x.vocab);
+    const others = (fn, bad, n) => { const seen = new Set([bad]), out = []; for (const v of shufR(r, pool)) { const val = fn(v); if (!seen.has(val)) { seen.add(val); out.push(val); } if (out.length >= n) break; } return out; };
+    const groups = { A: [], B: [], C: [], D: [] };
+    u.vocab.forEach(([t, d, e]) => {
+      const note = `${t}: ${d}${e ? ` Example: ${e}` : ""}`;
+      groups.A.push([`Which word means: “${d}”`, [t].concat(others((v) => v[0], t, 3)), 0, note]);
+      groups.B.push([`What does “${t}” mean?`, [d].concat(others((v) => v[1], d, 3)), 0, note]);
+      const rx = new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+      if (e && rx.test(e)) groups.C.push([`Which word fits in the blank?\n“${e.replace(new RegExp(rx.source, "gi"), "_____")}”`, [t].concat(others((v) => v[0], t, 3)), 0, note]);
+      const wrongDef = others((v) => v[1], d, 1)[0];
+      groups.D.push([`True or false: “${t}” means ${d.replace(/\.$/, "")}.`, ["True", "False"], 0, note]);
+      if (wrongDef) groups.D.push([`True or false: “${t}” means ${wrongDef.replace(/\.$/, "")}.`, ["False", "True"], 0, note]);
+    });
+    const out = [];
+    const lists = ["B", "A", "C", "D"].map((k) => shufR(r, groups[k]));
+    for (let i = 0; out.length < BONUS_SIZE && lists.some((l) => l.length); i++) { const l = lists[i % lists.length]; if (l.length) out.push(l.shift()); }
+    return out;
+  }
+
+  // All bonus quizzes for a unit: mixed quizzes of 10 from its bank, then the vocabulary quiz.
+  function bonusQuizList(g, sid, uid) {
+    const key = `${g}/${sid}/${uid}`;
+    if (bonusCache[key]) return bonusCache[key];
+    const s = findSubject(g, sid), u = s && findUnit(g, sid, uid);
+    if (!u || u.passage) return (bonusCache[key] = []);
+    const mainKeys = new Set((u.questions || []).map((q) => q[0] + "=>" + q[1][0]));
+    const bank = BONUS.bank(key).filter((q) => !mainKeys.has(q[0] + "=>" + q[1][0])).slice(0, BONUS_MAX), list = [];
+    for (let i = 0; i < bank.length; i += BONUS_SIZE) { const chunk = bank.slice(i, i + BONUS_SIZE); if (chunk.length >= 5) list.push({ kind: "mixed", items: chunk }); }
+    const v = bonusVocabTuples(s, u);
+    if (v.length >= 6) list.push({ kind: "vocab", items: v });
+    list.forEach((q, i) => { q.n = i + 1; q.id = `bonus-${i + 1}`; q.label = q.kind === "vocab" ? "Vocabulary & Examples" : `Bonus ${i + 1}`; q.short = q.kind === "vocab" ? "🔤" : String(i + 1); });
+    return (bonusCache[key] = list);
+  }
+  const bonusKey = (g, sid, uid, id) => `${g}/${sid}/${uid}/${id}`;
+  const bonusChips = (g, sid, uid, list) => list.map((q) => `<a class="bonus-chip" href="#/quiz/${g}/${sid}/${uid}/${q.id}" title="${esc(q.label)}"><b>${q.short}</b>${stars(bestFor(bonusKey(g, sid, uid, q.id)))}</a>`).join("");
+  const bonusTried = (g, sid, uid, list) => list.filter((q) => bestFor(bonusKey(g, sid, uid, q.id)) != null).length;
+
+  function bonusSection(g, sid, u) {
+    const list = bonusQuizList(g, sid, u.id);
+    if (!list.length) return "";
+    const total = list.reduce((n, q) => n + q.items.length, 0);
+    return `<section class="bonus"><h2>🎁 Bonus quizzes <span class="muted" style="font-size:.85rem;font-weight:400">(${bonusTried(g, sid, u.id, list)} of ${list.length} tried)</span></h2>
+      <p class="muted">${total} extra questions with new content, not repeats of the regular quiz. Each bonus quiz has 10 questions.${list.some((q) => q.kind === "vocab") ? " The 🔤 quiz tests this unit's vocabulary." : ""}</p>
+      <div class="bonus-grid">${bonusChips(g, sid, u.id, list)}</div></section>`;
+  }
+
+  function viewBonusZone(g) {
+    const d = C[g];
+    if (!d) return viewNotFound();
+    let totalQ = 0, totalTried = 0, totalQuizzes = 0;
+    const sections = d.subjects.map((s) => {
+      const rows = s.units.map((u) => {
+        const list = bonusQuizList(g, s.id, u.id);
+        if (!list.length) return "";
+        totalQuizzes += list.length; totalQ += list.reduce((n, q) => n + q.items.length, 0); totalTried += bonusTried(g, s.id, u.id, list);
+        return `<li class="unit-row"><div class="info"><a href="#/learn/${g}/${s.id}/${u.id}">${esc(u.title)}</a></div><div class="bonus-grid inline">${bonusChips(g, s.id, u.id, list)}</div></li>`;
+      }).join("");
+      return rows ? `<h2>${s.icon} ${esc(s.name)}${isAdvanced(s) ? ` ${trackBadge(s)}` : ""}</h2><ul class="unit-list">${rows}</ul>` : "";
+    }).join("");
+    render(`
+      ${crumbs([["Home", "#/"], [`Grade ${g}`, `#/grade/${g}`], ["Bonus quizzes"]])}
+      <h1>🎁 Grade ${g} Bonus Quizzes</h1>
+      <p class="muted">Extra practice on every unit with <b>new questions</b> that aren't in the regular quizzes. ${totalQuizzes} bonus quizzes · ${totalQ.toLocaleString()} questions · ${totalTried} tried so far. Tap a number to start; the 🔤 quiz covers the unit's vocabulary.</p>
+      ${sections || `<p class="muted">No bonus quizzes for this grade yet.</p>`}`);
   }
 
   // ---------- math roadmap ----------
@@ -850,6 +940,7 @@
     if (view === "programs") return viewPrograms();
     if (view === "math-roadmap") return viewMathRoadmap();
     if (view === "math") return viewMathTopic(a);
+    if (view === "bonus") return viewBonusZone(Number(a));
     if (view === "worksheets") return viewWorksheetList(Number(a));
     if (view === "worksheet") return viewWorksheet(Number(a), b, params);
     viewNotFound();
