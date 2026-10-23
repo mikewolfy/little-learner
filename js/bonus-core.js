@@ -38,6 +38,37 @@ window.BONUS = (function () {
     minus: (x) => String(x).replace("-", "−"),
   };
 
+
+  // From definition questions ("What is a prefix? | a word part...") build reversed ones
+  // ("Which term matches this definition? | prefix | ..."), using the unit's other terms as choices.
+  const STOP = /\b(of|first|last|next|second|third|purpose|job|role|formula|rule|difference|way|step|main|best|name|word|unit|value|result|reason|order|part|sum|answer)\b/i;
+  function deriveReverse(out, push, key) {
+    const terms = [];
+    out.forEach((t) => {
+      const m = /^What (?:is|are) (?:a |an |the )?([A-Za-z][A-Za-z' -]{1,30})\?$/.exec(t[0]);
+      if (!m) return;
+      const term = m[1].trim();
+      const def = t[1][0];
+      if (term.split(/\s+/).length > 3 || STOP.test(term) || def.split(/\s+/).length < 3 || /^(true|false|yes|no)$/i.test(def)) return;
+      terms.push([term, def]);
+    });
+    const defs = {};
+    terms.forEach(([, d]) => (defs[d] = (defs[d] || 0) + 1));
+    const uniq = terms.filter(([, d]) => defs[d] === 1);
+    if (uniq.length < 6) return;
+    uniq.forEach(([term, def], i) => {
+      const r = rngFrom(hash(key + "#rev#" + term));
+      const wrongs = [];
+      let g = 0;
+      const words = (d) => new Set(d.toLowerCase().match(/[a-z]{4,}/g) || []);
+      const mine = words(def);
+      const close = (d) => { const o = words(d); let n = 0; o.forEach((w) => mine.has(w) && n++); return n / Math.max(1, Math.min(o.size, mine.size)) > 0.4; };
+      while (wrongs.length < 3 && g++ < 80) { const [c, cd] = uniq[Math.floor(r() * uniq.length)]; if (c !== term && !wrongs.includes(c) && c.toLowerCase() !== term.toLowerCase() && !close(cd)) wrongs.push(c); }
+      if (wrongs.length < 3) return;
+      push([`Which term matches this definition?{nl}“${def.charAt(0).toUpperCase() + def.slice(1)}”`, [term].concat(wrongs), 0, `${term.charAt(0).toUpperCase() + term.slice(1)}: ${def}.`]);
+    });
+  }
+
   function parseLine(raw) {
     const s = String(raw).trim();
     if (!s || s.startsWith("//")) return null;
@@ -68,6 +99,7 @@ window.BONUS = (function () {
         } catch (e) { /* skip a bad draw */ }
       }
     });
+    deriveReverse(out, push, key);
     const r = rngFrom(hash(key));
     for (let i = out.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [out[i], out[j]] = [out[j], out[i]]; }
     return (cache[key] = out);
