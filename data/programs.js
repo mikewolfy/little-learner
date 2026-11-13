@@ -98,7 +98,7 @@ window.PROGRAMS = {
           "Algebra I (honors / high school credit)": ["Expressions, exponents, and polynomials", "Multistep linear equations and inequalities", "Functions, slope, and graphing lines", "Systems of equations", "Factoring and quadratic equations", "Lines and curves of best fit"],
           "Physical Science 8": ["Atoms and the periodic table", "Chemical reactions", "Force, motion, and Newton's laws", "Work, energy, and machines", "Waves, sound, and light", "Electricity and magnetism"],
           "Civics & Economics": ["Founding documents and the Constitution", "Rights and responsibilities of citizens", "Political participation, parties, and the media", "National, state, and local government", "Foreign policy and landmark court cases", "Courts and the legal system", "Economic systems, trade, and personal finance"],
-          "Grade 8 (study it on this site)": ["This site covers Civics & Economics for grade 8."],
+          "Grade 8 (study it on this site)": ["This site covers Math 8, English 8, Physical Science, and Civics & Economics. (Algebra I is not covered yet; see the Math Roadmap for Algebra.)"],
         },
       },
     ],

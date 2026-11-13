@@ -1,9 +1,9 @@
 /* Grade 8: Civics & Economics. In Chesterfield County Public Schools this is the eighth grade social studies course
-   (grade 7 studies U.S. History: 1865 to the Present). Question format: [question, [choices...], indexOfCorrectChoice, explanation] */
+   (grade 7 studies U.S. History: 1865 to the Present). Math 8, English 8, and Physical Science are in grade8-math.js, grade8-english.js, and grade8-science.js. Question format: [question, [choices...], indexOfCorrectChoice, explanation] */
 window.CURRICULUM = window.CURRICULUM || {};
 window.CURRICULUM[8] = {
-  title: "Civics & Economics",
-  intro: "Eighth grade social studies is Civics & Economics: how American government works, citizens' rights and responsibilities, the courts, and how the economy works. This course has an end-of-course SOL test. This site covers this course only for grade 8.",
+  title: "Ready for High School",
+  intro: "Eighth grade covers real numbers, the Pythagorean theorem, transformations, linear functions, and probability in Math 8; literary analysis, argument, and research in English 8; atoms, forces, energy, waves, and electricity in Physical Science; and Civics & Economics, which has an end-of-course SOL test.",
   subjects: [
     {
       id: "history", name: "Civics & Economics", icon: "🏛️", standards: "2023 History & Social Science SOL",

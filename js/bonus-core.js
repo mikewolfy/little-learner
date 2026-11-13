@@ -65,7 +65,7 @@ window.BONUS = (function () {
       const close = (d) => { const o = words(d); let n = 0; o.forEach((w) => mine.has(w) && n++); return n / Math.max(1, Math.min(o.size, mine.size)) > 0.4; };
       while (wrongs.length < 3 && g++ < 80) { const [c, cd] = uniq[Math.floor(r() * uniq.length)]; if (c !== term && !wrongs.includes(c) && c.toLowerCase() !== term.toLowerCase() && !close(cd)) wrongs.push(c); }
       if (wrongs.length < 3) return;
-      push([`Which term matches this definition?{nl}“${def.charAt(0).toUpperCase() + def.slice(1)}”`, [term].concat(wrongs), 0, `${term.charAt(0).toUpperCase() + term.slice(1)}: ${def}.`]);
+      push([`Which term matches this definition?\n“${def.charAt(0).toUpperCase() + def.slice(1)}”`, [term].concat(wrongs), 0, `${term.charAt(0).toUpperCase() + term.slice(1)}: ${def}.`]);
     });
   }
 

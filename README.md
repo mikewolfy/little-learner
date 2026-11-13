@@ -9,7 +9,7 @@ A study-and-quiz site for **3rd, 5th, and 7th grade** (plus 8th grade Civics & E
 | 3 | 11 units | 10 units | 8 units | 7 units: Greece, Rome, Mali, explorers, geography, economics, civics |
 | 5 | 12 units | 9 units | 10 units | 9 units: U.S. History to 1865 |
 | 7 | 11 units | 8 units | 9 units (Life Science) | 15 units: U.S. History 1865 to the Present (plus a 9-section Health & PE subject) |
-| 8 | – | – | – | 18 units: Civics & Economics |
+| 8 | 8 units (Math 8) | 8 units (English 8) | 8 units (Physical Science) | 18 units: Civics & Economics |
 
 Every unit has:
 - **Study guide**: key ideas, worked examples, and tap-to-flip vocabulary cards
@@ -98,6 +98,6 @@ This is not an official CCPS resource. SOL codes are approximate. Unit order and
 CCPS pages list social studies for grades 6 and 7 and Civics & Economics for grade 8, so:
 
 - **Grade 7 social studies** is **U.S. History: 1865 to the Present** (`data/grade7-ushistory.js`, 15 sections from Reconstruction to modern America, plus a Virginia section). Bonus banks are in `data/bonus-g7-ushistory-*.js`.
-- **Grade 8** is **Civics & Economics** (`data/grade8.js` and `data/grade8-social.js`, 18 sections). Its bonus banks are `data/bonus-g8-*.js`.
+- **Grade 8** has Math 8, English 8, Physical Science (`data/grade8-math.js`, `grade8-english.js`, `grade8-science.js`, 8 sections each) and **Civics & Economics** (`data/grade8.js` and `data/grade8-social.js`, 18 sections). Bonus banks are `data/bonus-g8-*.js`.
 - `data/grade7-health.js` adds a **Health & PE** subject to Grade 7 with nine sections (banks in `data/bonus-g7-health*.js`).
 - Keys for bonus banks and extras are `grade/subject/unit`, for example `7/ushistory/cold-war` and `8/history/courts`.
