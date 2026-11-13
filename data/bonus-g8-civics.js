@@ -1,7 +1,7 @@
-/* Grade 7 Civics & Economics: bonus question banks. */
+/* Grade 8 Civics & Economics: bonus question banks. */
 (function () {
   "use strict";
-  const B = window.BONUS, T = B.T, K = (u) => "7/history/" + u;
+  const B = window.BONUS, T = B.T, K = (u) => "8/history/" + u;
   const A = (u, t) => B.add(K(u), t.split("\n").filter((x) => x.trim()).join("\n"));
   const ri = T.ri;
   const f = (n) => n.toLocaleString("en-US");

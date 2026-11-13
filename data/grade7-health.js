@@ -1,4 +1,4 @@
-/* Grade 7 Health & Physical Education: a new subject placed after Civics & Economics.
+/* Grade 7 Health & Physical Education: a new subject placed after U.S. History.
    Questions use a compact format: question | right answer | wrong | wrong | wrong | => explanation
    (the right answer comes first; the app shuffles the choices). */
 (function () {
@@ -348,6 +348,6 @@ Why think about long-term consequences?|a choice can affect your future health|i
     vocab: { "wellness": "Good sleep supports wellness.", "SMART goal": "A SMART goal has a deadline.", "consequence": "A consequence of skipping sleep is feeling tired.", "value": "Honesty is an important value.", "advocacy": "He did advocacy for bike safety.", "media influence": "Media influence can change what people want to buy.", "health literacy": "Health literacy helps you pick reliable sources." },
   });
 
-  const idx = g7.subjects.findIndex((s) => s.id === "history");
+  const idx = g7.subjects.findIndex((s) => s.id === "ushistory");
   g7.subjects.splice(idx + 1, 0, subject);
 })();

@@ -1,6 +1,6 @@
-/* Grade 7 Civics & Economics: more bonus questions (scenarios and true/false) for the added social studies sections. */
+/* Grade 8 Civics & Economics: more bonus questions (scenarios and true/false) for the added social studies sections. */
 (function () {
-  const A = (u, t) => BONUS.add("7/history/" + u, t.split("\n").filter((x) => x.trim()).join("\n"));
+  const A = (u, t) => BONUS.add("8/history/" + u, t.split("\n").filter((x) => x.trim()).join("\n"));
 
   A("parties-media", `
 True or false: The press is protected by the First Amendment.|True|False|=>Freedom of the press.

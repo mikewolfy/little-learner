@@ -120,43 +120,43 @@ Object.assign(window.EXTRAS, {
   },
 
   // ----- Civics & Economics -----
-  "7/history/foundations": {
+  "8/history/foundations": {
     examples: ["Ideas → U.S. documents:\nMagna Carta (limited the king) → limited government\nEnglish Bill of Rights → Bill of Rights\nVirginia Declaration of Rights → U.S. Bill of Rights\nMayflower Compact → self-government"],
     vocab: { "Magna Carta": "English nobles forced King John to sign the Magna Carta in 1215.", "consent of the governed": "Citizens voting for leaders shows consent of the governed.", "rule of law": "A president must follow court rulings like everyone else.", "limited government": "The Constitution lists what the government can and cannot do.", "natural rights": "John Locke wrote about natural rights to life, liberty, and property." },
   },
-  "7/history/constitution": {
+  "8/history/constitution": {
     examples: ["Checks and balances:\nPresident vetoes a bill → Congress overrides with 2/3 vote\nCongress passes a law → Supreme Court can rule it unconstitutional\nPresident nominates a judge → Senate must confirm", "Federalism:\nNational: print money, declare war\nState: run schools, issue driver's licenses\nBoth: collect taxes, build roads"],
     vocab: { "Preamble": "The Preamble says one goal is to 'establish Justice.'", "separation of powers": "Congress makes laws, but the president enforces them.", "checks and balances": "The Senate must approve the president's Supreme Court nominees.", "federalism": "Virginia sets its own driving age, but the national government prints money.", "amendment": "The 19th Amendment gave women the right to vote.", "veto": "The president vetoed the bill, sending it back to Congress." },
   },
-  "7/history/rights": {
+  "8/history/rights": {
     examples: ["First Amendment (RAPPS): Religion, Assembly, Press, Petition, Speech", "Naturalization steps: be 18+, live in the U.S. 5 years as a permanent resident, pass English and civics tests, take the Oath of Allegiance"],
     vocab: { "naturalization": "A woman from Mexico becomes a U.S. citizen through naturalization.", "due process": "A person accused of a crime gets a fair trial with a lawyer.", "Bill of Rights": "The Fifth Amendment in the Bill of Rights protects against self-incrimination.", "duty": "Serving on a jury when called is a duty.", "responsibility": "Staying informed about issues is a responsibility.", "petition": "Students signed a petition asking the county for a new skate park." },
   },
-  "7/history/participation": {
+  "8/history/participation": {
     examples: ["How a candidate wins: announce → raise money → primary election → general election → (for president) Electoral College vote"],
     vocab: { "political party": "Democrats and Republicans are the two major political parties.", "platform": "A party's platform might support lower taxes or more school funding.", "Electoral College": "A presidential candidate needs 270 electoral votes to win.", "interest group": "The American Medical Association is an interest group.", "voter turnout": "If 60 of 100 eligible people vote, turnout is 60%.", "propaganda": "Posters showing only one side of an issue with emotional slogans." },
   },
-  "7/history/national-government": {
+  "8/history/national-government": {
     examples: ["A bill's journey:\nIntroduced in the House → committee → House vote → Senate committee → Senate vote → conference committee (if needed) → president signs or vetoes"],
     vocab: { "Congress": "Congress meets in the Capitol in Washington, D.C.", "bill": "A bill to lower the voting age is a proposed law.", "committee": "The Armed Services Committee studies military bills.", "override": "Congress overrode the veto with a 2/3 vote in both houses.", "impeach": "The House can impeach a president; the Senate holds the trial.", "Cabinet": "The Secretary of State is a member of the Cabinet." },
   },
-  "7/history/state-local": {
+  "8/history/state-local": {
     examples: ["Who does what?\nPotholes on your street → county/VDOT\nState driving laws → General Assembly\nNew school boundaries → School Board\nLocal zoning → Board of Supervisors"],
     vocab: { "General Assembly": "The General Assembly passes Virginia's state budget.", "governor": "Virginia's governor signs or vetoes bills from the General Assembly.", "Board of Supervisors": "Chesterfield's Board of Supervisors approves the county budget.", "ordinance": "A county ordinance limiting fireworks.", "zoning": "Zoning keeps factories out of neighborhoods.", "property tax": "Homeowners pay property tax based on their home's value." },
   },
-  "7/history/courts": {
+  "8/history/courts": {
     examples: ["Criminal vs. civil:\nCriminal: Commonwealth of Virginia v. Smith (theft)\nCivil: Jones v. Lee (dispute over a broken contract)\nAppeal path: General District Court → Circuit Court → Court of Appeals → Supreme Court of Virginia"],
     vocab: { "judicial review": "The Supreme Court used judicial review to strike down a law.", "Marbury v. Madison": "Marbury v. Madison (1803) gave courts the power of judicial review.", "criminal case": "A person charged with shoplifting is in a criminal case.", "civil case": "Suing a contractor for a leaky roof is a civil case.", "appellate jurisdiction": "The Court of Appeals reviews decisions from lower courts.", "plaintiff": "The person suing in a civil case is the plaintiff." },
   },
-  "7/history/economics": {
+  "8/history/economics": {
     examples: ["Supply and demand:\nA hot new toy: high demand + low supply → price rises\nSummer: lots of tomatoes (high supply) → prices fall", "Factors of production in a bakery: flour (land), bakers (labor), ovens (capital), owner (entrepreneur)"],
     vocab: { "scarcity": "Limited time means you can't do every after-school activity.", "opportunity cost": "Choosing to study instead of watching a game: the game is your opportunity cost.", "market economy": "Businesses decide what phones to make based on what people buy.", "mixed economy": "The U.S. has private businesses and government services like public schools.", "supply": "A farmer brings 500 apples to sell.", "demand": "During a heat wave, demand for fans goes up.", "entrepreneur": "A teen who starts a dog-walking business is an entrepreneur." },
   },
-  "7/history/us-economy": {
+  "8/history/us-economy": {
     examples: ["Circular flow:\nHouseholds → labor → businesses\nBusinesses → wages → households\nHouseholds → spending → businesses\nBusinesses → goods and services → households\nGovernment collects taxes from both and provides public services"],
     vocab: { "circular flow": "Your parents' paycheck and the groceries they buy are both parts of the circular flow.", "Federal Reserve": "The Federal Reserve raises interest rates to fight inflation.", "monetary policy": "Lowering interest rates is a monetary policy tool.", "fiscal policy": "Congress cutting taxes is fiscal policy.", "public good": "Street lights are a public good.", "tariff": "A 10% tariff on imported cars makes them more expensive." },
   },
-  "7/history/personal-finance": {
+  "8/history/personal-finance": {
     examples: ["Simple budget (monthly):\nIncome: $100 (allowance + chores)\nSavings: $20 (pay yourself first)\nNeeds: $30 · Wants: $40 · Giving: $10", "Compound interest: $100 at 10% per year → $110 after year 1 → $121 after year 2"],
     vocab: { "budget": "A budget plans $20 for savings and $30 for fun each month.", "interest": "A savings account paying 2% interest earns $2 on $100 per year.", "credit": "Buying a car with a loan uses credit.", "compound interest": "Savings grow faster each year with compound interest.", "work ethic": "Showing up on time and finishing tasks shows a strong work ethic.", "identity theft": "Someone using your stolen information to open a credit card." },
   },

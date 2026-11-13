@@ -1,8 +1,8 @@
-/* Grade 7 Civics & Economics: extra history and social science sections.
+/* Grade 8 Civics & Economics: extra history and social science sections.
    Questions use a compact format: question | right answer | wrong | wrong | wrong | => explanation
    (the right answer comes first; the app shuffles the choices). */
 (function () {
-  const subject = window.CURRICULUM[7].subjects.find((s) => s.id === "history");
+  const subject = window.CURRICULUM[8].subjects.find((s) => s.id === "history");
   const Q = (text) => text.trim().split("\n").filter((l) => l.trim()).map((l) => {
     const parts = l.split("|").map((p) => p.trim());
     const ex = parts.pop().replace(/^=>\s*/, "");
@@ -13,7 +13,7 @@
     u.questions = Q(u.questions);
     subject.units.push(u);
     window.EXTRAS = window.EXTRAS || {};
-    window.EXTRAS["7/history/" + u.id] = extra;
+    window.EXTRAS["8/history/" + u.id] = extra;
   };
 
   add({

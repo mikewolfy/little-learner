@@ -1,6 +1,6 @@
 # Little Learner 🦉
 
-A study-and-quiz site for **3rd, 5th, and 7th grade**, organized around the **Virginia Standards of Learning (SOL)** used by Chesterfield County Public Schools.
+A study-and-quiz site for **3rd, 5th, and 7th grade** (plus 8th grade Civics & Economics), organized around the **Virginia Standards of Learning (SOL)** used by Chesterfield County Public Schools.
 
 ## What's inside
 
@@ -8,7 +8,8 @@ A study-and-quiz site for **3rd, 5th, and 7th grade**, organized around the **Vi
 |---|---|---|---|---|
 | 3 | 11 units | 10 units | 8 units | 7 units: Greece, Rome, Mali, explorers, geography, economics, civics |
 | 5 | 12 units | 9 units | 10 units | 9 units: U.S. History to 1865 |
-| 7 | 11 units | 8 units | 9 units (Life Science) | 10 units: Civics & Economics |
+| 7 | 11 units | 8 units | 9 units (Life Science) | 15 units: U.S. History 1865 to the Present (plus a 9-section Health & PE subject) |
+| 8 | – | – | – | 18 units: Civics & Economics |
 
 Every unit has:
 - **Study guide**: key ideas, worked examples, and tap-to-flip vocabulary cards
@@ -92,8 +93,11 @@ Answer choices are shuffled automatically, so you can always list the correct an
 
 This is not an official CCPS resource. SOL codes are approximate. Unit order and emphasis vary by teacher, so check your child's pacing guide or Schoology/teacher materials for exactly what is being taught each quarter.
 
-## Grade 7 social studies and Health & PE
+## Grade 7 U.S. History, Grade 8 Civics & Economics, and Health & PE
 
-- `data/grade7-social.js` adds eight sections to Civics & Economics (parties and media, foreign policy, landmark court cases, civil rights, geography and population, social studies skills, trade and the global economy, Virginia in the founding era).
-- `data/grade7-health.js` adds a **Health & PE** subject with nine sections (nutrition, fitness, healthy habits, mental health, substance safety, safety and first aid, relationships, movement and sports, wellness and decisions).
-- Bonus banks are in `data/bonus-g7-social*.js` and `data/bonus-g7-health*.js`. Each new section has 90–115 bonus questions.
+CCPS pages list social studies for grades 6 and 7 and Civics & Economics for grade 8, so:
+
+- **Grade 7 social studies** is **U.S. History: 1865 to the Present** (`data/grade7-ushistory.js`, 15 sections from Reconstruction to modern America, plus a Virginia section). Bonus banks are in `data/bonus-g7-ushistory-*.js`.
+- **Grade 8** is **Civics & Economics** (`data/grade8.js` and `data/grade8-social.js`, 18 sections). Its bonus banks are `data/bonus-g8-*.js`.
+- `data/grade7-health.js` adds a **Health & PE** subject to Grade 7 with nine sections (banks in `data/bonus-g7-health*.js`).
+- Keys for bonus banks and extras are `grade/subject/unit`, for example `7/ushistory/cold-war` and `8/history/courts`.

@@ -1,7 +1,7 @@
-/* Grade 7 Civics & Economics: bonus questions for the added social studies sections.
+/* Grade 8 Civics & Economics: bonus questions for the added social studies sections.
    Format: question | right | wrong | wrong | wrong | => explanation   (right answer first) */
 (function () {
-  const A = (u, t) => BONUS.add("7/history/" + u, t.split("\n").filter((x) => x.trim()).join("\n"));
+  const A = (u, t) => BONUS.add("8/history/" + u, t.split("\n").filter((x) => x.trim()).join("\n"));
 
   A("parties-media", `
 What is a political party?|an organized group that works to win elections and shape policy|a group of judges|a government agency|=>Parties compete in elections.

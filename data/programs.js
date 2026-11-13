@@ -23,6 +23,7 @@ window.PROGRAMS = {
     reading: ["vdoeEnglish", "ccpsCurriculum"],
     science: ["vdoeScience", "ccpsCurriculum"],
     history: ["vdoeHistory", "ccpsCurriculum"],
+    ushistory: ["vdoeHistory", "ccpsCurriculum"],
     health: ["vdoeHealth", "ccpsCurriculum"],
     advanced: ["ccpsGifted", "giftedPlan"],
   },
@@ -49,7 +50,7 @@ window.PROGRAMS = {
 
   middle: {
     honorsNote: "In CCPS, honors and advanced courses follow the same curriculum as standard courses but add rigor: more depth, harder texts and problems, and a faster pace.",
-    socialStudiesNote: "Heads up: Virginia's 2023 standards recommend Civics & Economics in 7th grade, but CCPS's summer course list shows Civics & Economics in 8th grade. Ask your child's teacher which social studies course they are taking this year.",
+    socialStudiesNote: "Social studies sequence: CCPS pages list Social Studies for grades 6 and 7 and Civics & Economics for grade 8 (the CCPS summer course list shows Civics & Economics in grade 8). We follow that: this site's Grade 7 covers U.S. History: 1865 to the Present, and Grade 8 covers Civics & Economics. The state standards can place these courses in different grades, and CCPS's own pages were not fully readable when we checked, so confirm the course and pacing with your child's teacher.",
     mathLanes: [
       { name: "On grade level", steps: ["Math 6", "Math 7", "Math 8", "Algebra I in 9th"], text: "The standard path." },
       { name: "Honors", steps: ["Math 6", "Honors Math 7", "Algebra I in 8th", "Geometry in 9th"], text: "Reaches Algebra I, a high school credit course, in 8th grade." },
@@ -63,13 +64,12 @@ window.PROGRAMS = {
           { subject: "English", standard: "English 6", honors: "Honors English 6", gifted: "CBG English 6" },
           { subject: "Math", standard: "Math 6", honors: "Advanced math placement", gifted: "CBG / accelerated math", verify: true },
           { subject: "Science", standard: "Science 6", honors: "Honors science pathway begins in 7th", gifted: "CBG science" },
-          { subject: "Social Studies", standard: "Grade 6 Social Studies (U.S. History 1865–present in the state sequence)", honors: "Honors option varies by school", gifted: "CBG social studies", verify: true },
+          { subject: "Social Studies", standard: "Grade 6 Social Studies", honors: "Honors option varies by school", gifted: "CBG social studies", verify: true },
         ],
         topics: {
           "Math 6": ["Ratios, rates, and percents", "Integers and absolute value", "Multiplying and dividing fractions", "Decimal operations", "Exponents and order of operations", "Area of triangles, parallelograms, and trapezoids", "Circles: circumference and area", "The coordinate plane", "One-step equations and inequalities", "Statistics: dot plots, circle graphs, and mean"],
           "English 6": ["Figurative language and word roots", "Theme, characterization, and point of view", "Informational text structure and central idea", "Narrative and argument writing", "Grammar: pronouns, punctuation, and sentence variety", "Research and citing sources"],
           "Science 6": ["Energy and how it moves", "The solar system and space", "Atoms, elements, and the periodic table", "Properties of water", "Air, the atmosphere, and weather", "Watersheds and natural resources"],
-          "Social Studies 6": ["Reconstruction", "Westward expansion and industrialization", "Immigration and growth of cities", "World War I and the 1920s", "The Great Depression and World War II", "The Cold War and the Civil Rights Movement", "The United States today"],
         },
       },
       {
@@ -78,10 +78,11 @@ window.PROGRAMS = {
           { subject: "English", standard: "English 7", honors: "Honors English 7", gifted: "CBG English 7" },
           { subject: "Math", standard: "Math 7", honors: "Honors Math 7", gifted: "Middle School Math II / Math 8 Honors", verify: true },
           { subject: "Science", standard: "Life Science 7", honors: "Honors Life Science (summer bridge required if coming from Science 6)", gifted: "CBG science" },
-          { subject: "Social Studies", standard: "Grade 7 Social Studies", honors: "Honors option varies by school", gifted: "CBG social studies", verify: true },
+          { subject: "Social Studies", standard: "U.S. History: 1865 to the Present", honors: "Honors option varies by school", gifted: "CBG social studies", verify: true },
         ],
         topics: {
-          "Grade 7 (study it on this site)": ["This site covers Math 7, English 7, Life Science, and Civics & Economics, plus an Honors & Gifted section with Algebra I preview units."],
+          "Social Studies 7 (U.S. History: 1865 to the Present)": ["Reconstruction", "Westward expansion and Native Americans", "Industrialization and labor", "Immigration and growth of cities", "The Progressive Era", "Imperialism and the Spanish-American War", "World War I", "The 1920s", "The Great Depression and New Deal", "World War II", "The Cold War", "The Civil Rights Movement", "Vietnam and social change", "The modern United States", "Virginia since 1865"],
+          "Grade 7 (study it on this site)": ["This site covers Math 7, English 7, Life Science, U.S. History: 1865 to the Present, and Health & PE, plus an Honors & Gifted section with Algebra I preview units."],
         },
       },
       {
@@ -96,7 +97,8 @@ window.PROGRAMS = {
           "Math 8": ["Real and irrational numbers, square roots", "The Pythagorean theorem", "Transformations", "Volume and surface area of 3-D figures", "Linear relationships, slope, and functions", "Multistep equations and inequalities", "Scatterplots, box plots, and compound probability"],
           "Algebra I (honors / high school credit)": ["Expressions, exponents, and polynomials", "Multistep linear equations and inequalities", "Functions, slope, and graphing lines", "Systems of equations", "Factoring and quadratic equations", "Lines and curves of best fit"],
           "Physical Science 8": ["Atoms and the periodic table", "Chemical reactions", "Force, motion, and Newton's laws", "Work, energy, and machines", "Waves, sound, and light", "Electricity and magnetism"],
-          "Civics & Economics": ["Founding documents and the Constitution", "Rights and responsibilities of citizens", "National, state, and local government", "Courts and the legal system", "Economic systems and personal finance"],
+          "Civics & Economics": ["Founding documents and the Constitution", "Rights and responsibilities of citizens", "Political participation, parties, and the media", "National, state, and local government", "Foreign policy and landmark court cases", "Courts and the legal system", "Economic systems, trade, and personal finance"],
+          "Grade 8 (study it on this site)": ["This site covers Civics & Economics for grade 8."],
         },
       },
     ],

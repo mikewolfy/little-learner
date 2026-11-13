@@ -114,6 +114,7 @@ a.card:hover { transform: translateY(-2px); border-color: var(--accent); }
 .subject-english { --sub: var(--english); }
 .subject-science { --sub: var(--science); }
 .subject-history { --sub: var(--history); }
+.subject-ushistory { --sub: var(--history); }
 .subject-unit1 { --sub: var(--unit1); }
 .subject-health { --sub: var(--health); }
 .focus { border: 2px solid var(--unit1); margin: 8px 0 18px; }
