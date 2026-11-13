@@ -78,6 +78,9 @@ h3 { font-size: 1.1rem; margin: 0 0 0.3em; }
 .logo { font-size: 1.5rem; }
 .topnav { display: flex; align-items: center; gap: 14px; }
 .topnav a { text-decoration: none; font-weight: 600; }
+.topnav { flex-wrap: wrap; justify-content: flex-end; }
+.topnav .nav-games { background: var(--accent); color: #fff; padding: 6px 12px; border-radius: 999px; }
+.topnav .nav-games:hover { filter: brightness(1.1); }
 
 .footer { text-align: center; font-size: 0.85rem; color: var(--muted); padding: 18px 16px 28px; }
 
