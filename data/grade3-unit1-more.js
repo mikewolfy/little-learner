@@ -8,41 +8,6 @@
     u.questions = (u.questions || []).concat(list);
   };
 
-  add("long-vowels", [
-    ["We saw a bright ___ after the rain stopped.", ["rainbow", "raynbow", "ranbow"], 0, "Rain has the ai vowel team for long a, and bow says long o."],
-    ["Dad will ___ us to the lake.", ["drive", "dryve", "driev"], 0, "dr-i-v-e uses silent e, so the i says its name."],
-    ["The ___ kitten curled up in my lap.", ["tiny", "tyny", "tiney"], 0, "Long i at the end of the first syllable: ti-ny."],
-    ["Please ___ the window, it's cold.", ["close", "cloas", "clowse"], 0, "Silent e: c-l-o-s-e makes the o say its name."],
-    ["I ate a juicy ___ for a snack.", ["peach", "peech", "peache"], 0, "Long e spelled ea: peach, beach, teach."],
-    ["A boat can ___ on the water.", ["float", "flote", "floet"], 0, "Long o spelled oa in the middle of a short word: float, coat, goat."],
-    ["A ___ left a shiny trail on the leaf.", ["snail", "snale", "snayl"], 0, "Long a spelled ai: snail, mail, tail."],
-    ["Can you ___ the ball to me?", ["throw", "thro", "throwe"], 0, "Long o at the end of a word is often ow: throw, snow, grow."],
-    ["Mom cut the bread into a thick ___.", ["slice", "slise", "slyce"], 0, "Silent e makes the i long, and c before e says /s/."],
-    ["My brother plays the ___ in the school band.", ["flute", "floot", "flewt"], 0, "Silent e: f-l-u-t-e makes the u say its name."],
-    ["It is ___ that dogs are loyal pets.", ["true", "tru", "trew"], 0, "Long u spelled ue: true, blue, glue."],
-    ["Birds ___ south for the winter.", ["fly", "fli", "flye"], 0, "Long i at the end of a short word is often y: fly, sky, try."],
-    ["The gopher dug a deep ___ in the yard.", ["hole", "hoal", "hoel"], 0, "Silent e: h-o-l-e."],
-    ["The pirate wore a gold ___ around his neck.", ["chain", "chane", "chayn"], 0, "Long a spelled ai in the middle: chain, brain, paint."],
-    ["We followed the muddy ___ through the woods.", ["trail", "trale", "trayl"], 0, "Long a spelled ai: trail, rain, snail."],
-    ["I like green ___ with my dinner.", ["peas", "peaz", "pese"], 0, "Long e spelled ea: peas, beans, leaves."],
-    ["Please ___ the question, I didn't hear it.", ["repeat", "repete", "repeet"], 0, "re-peat: long e spelled ea, like eat."],
-    ["The cat hid ___ the bed.", ["beneath", "beneeth", "beneith"], 0, "be-neath: the long e is spelled ea."],
-    ["The ___ dog slept all afternoon.", ["lazy", "laizy", "lazey"], 0, "la-zy: the first a is long, and the y at the end says long e."],
-    ["Which word has the same vowel sound as 'rain'?", ["train", "tan", "tip"], 0, "Rain and train both have the long a sound spelled ai."],
-    ["Which word has the long e sound?", ["green", "pen", "hug"], 0, "Green has the ee vowel team."],
-    ["Which word has a long o sound?", ["road", "rod", "rub"], 0, "Road uses the oa vowel team."],
-    ["Which word has a long i sound?", ["bike", "big", "bed"], 0, "Bike uses silent e, so the i says its name."],
-    ["Which word has a long u sound?", ["tune", "tub", "ten"], 0, "Tune uses silent e, so the u says its name."],
-    ["Add a silent e to 'hop' to make a new word.", ["hope", "hopp", "hoap"], 0, "Silent e makes the o long: hop → hope."],
-    ["Add a silent e to 'cap' to make a new word.", ["cape", "capp", "caip"], 0, "Silent e makes the a long: cap → cape."],
-    ["Which word is spelled correctly?", ["goat", "gote", "goet"], 0, "Long o in the middle of a short word is often oa."],
-    ["Which word is spelled correctly?", ["sleep", "sleap", "slepe"], 0, "Long e spelled ee: sleep, keep, deep."],
-    ["Which word is spelled correctly?", ["train", "trane", "trayn"], 0, "Long a spelled ai: train, rain, mail."],
-    ["Which spelling pattern makes the long i sound in 'high'?", ["igh", "ie", "oa"], 0, "igh is a common long i spelling: high, night, light."],
-    ["Which word rhymes with 'cake' and uses silent e?", ["bake", "back", "beak"], 0, "Bake and cake both end in a_e."],
-    ["Which word has the long a sound spelled ay?", ["stay", "stack", "stain"], 0, "Stay ends in ay. Stain has ai."],
-  ]);
-
   add("soft-g-c", [
     ["We ate fried ___ for dinner.", ["rice", "rise", "rys"], 0, "r-i-c-e: c before e says /s/."],
     ["I sent a ___ to my grandma.", ["message", "messaje", "messadge"], 0, "mes-sage: -ge at the end says /j/."],
@@ -280,9 +245,9 @@
   };
   Object.entries(gens).forEach(([id, g]) => { unit1.units.find((u) => u.id === id).gen = g; });
   unit1.mixes = [
-    { id: "focus", label: "🎯 Focus Round: trouble spots (20)", size: 20, units: ["silent-letters", "plurals", "le-el-al-il", "soft-g-c", "long-vowels"],
-      about: "Silent letters, plurals, -le/-el/-al/-il endings, soft g/c, and long vowels." },
-    { id: "spelling", label: "🔤 Spelling Round: sound patterns (20)", size: 20, units: ["long-vowels", "soft-g-c", "le-el-al-il", "silent-letters"],
+    { id: "focus", label: "🎯 Focus Round: trouble spots (20)", size: 20, units: ["silent-letters", "plurals", "le-el-al-il", "soft-g-c", "long-a", "long-e", "long-i", "long-o", "long-u"],
+      about: "Silent letters, plurals, -le/-el/-al/-il endings, soft g/c, and long vowel spellings." },
+    { id: "spelling", label: "🔤 Spelling Round: sound patterns (20)", size: 20, units: ["long-a", "long-e", "long-i", "long-o", "long-u", "soft-g-c", "le-el-al-il", "silent-letters"],
       about: "All four phonics spelling skills." },
     { id: "words", label: "🧩 Word Study Round (20)", size: 20, units: ["compound-words", "synonyms-antonyms", "shades-of-meaning", "plurals"],
       about: "Compound words, synonyms and antonyms, shades of meaning, and plurals." },

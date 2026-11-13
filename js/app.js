@@ -344,6 +344,18 @@
     return list.filter((q) => { const k = q.q + "=>" + q.choices[q.answer]; if (seen.has(k)) return false; seen.add(k); return true; });
   }
 
+  // Picks questions evenly across topics. Units that share a `group` (e.g. the five long-vowel sections)
+  // count as one topic, so a split-up skill doesn't crowd out the others.
+  function groupedPicks(units, size, extra, depth) {
+    const groups = new Map();
+    units.forEach((u) => { const k = u.group || u.id; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(u); });
+    const per = Math.ceil(size / groups.size) + extra;
+    return shuffle([...groups.values()]).flatMap((list) => {
+      const share = Math.ceil(per / list.length);
+      return shuffle(list).flatMap((u) => shuffle(unitPool(u, depth(share))).slice(0, share));
+    });
+  }
+
   function buildQuiz(g, sid, uid, len = QUIZ_LENGTH) {
     if (sid === "all") {
       const units = C[g].subjects.filter((s) => !isAdvanced(s) && !s.passageSubject).flatMap((s) => s.units);
@@ -354,9 +366,7 @@
     if (uid.startsWith("mix-")) {
       const mix = (s.mixes || []).find((m) => "mix-" + m.id === uid);
       const units = mix.units.map((id) => s.units.find((u) => u.id === id));
-      const per = Math.ceil(mix.size / units.length) + 1;
-      const picks = shuffle(units).flatMap((u) => shuffle(unitPool(u, 2)).slice(0, per));
-      return dedupe(shuffle(picks)).slice(0, mix.size);
+      return dedupe(shuffle(groupedPicks(units, mix.size, 1, () => 2))).slice(0, mix.size);
     }
     if (uid === "all" && s.passageSubject) {
       // Reading: pick two passages and ask all their questions, one passage at a time.
@@ -364,9 +374,7 @@
     }
     if (uid === "all") {
       const size = s.reviewSize || 15;
-      const per = Math.ceil(size / s.units.length);
-      const picks = shuffle(s.units).flatMap((u) => shuffle(unitPool(u, per)).slice(0, per));
-      return dedupe(shuffle(picks)).slice(0, size);
+      return dedupe(shuffle(groupedPicks(s.units, size, 0, (per) => per))).slice(0, size);
     }
     const u = findUnit(g, sid, uid);
     if (u.passage) return unitPool(u, 0); // passage questions stay in reading order

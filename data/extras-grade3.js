@@ -3,9 +3,25 @@
 window.EXTRAS = window.EXTRAS || {};
 Object.assign(window.EXTRAS, {
   // ----- Reading Unit 1 -----
-  "3/unit1/long-vowels": {
-    examples: ["Same sound, different spellings (long a):\nrain (ai) · play (ay) · cake (a_e)\nTip: at the end of a word, use ay. In the middle, try ai or a_e."],
-    vocab: { "long vowel": "The a in 'cake' and the o in 'boat' are long vowels.", "silent e": "In 'kite,' you don't hear the e, but it makes the i say its name.", "vowel team": "In 'boat,' the o and a team up to make one long o sound.", "syllable": "'Re-mote' has two syllables." },
+  "3/unit1/long-a": {
+    examples: ["Same sound, three spellings:\ncake (a_e) · rain (ai) · play (ay)\nTip: at the end of a word, use ay. In the middle, try ai or a_e."],
+    vocab: {"long a":"The a in 'cake' and 'rain' is a long a.","silent e":"In 'cake,' you don't hear the e, but it makes the a say its name.","vowel team":"In 'rain,' the a and i team up to make one long a sound.","spelling pattern":"ay is a spelling pattern for long a."},
+  },
+  "3/unit1/long-e": {
+    examples: ["Same sound, different spellings:\ntree (ee) · team (ea) · these (e_e) · happy (y) · field (ie) · key (ey)"],
+    vocab: {"long e":"The e in 'tree' and 'happy' is a long e.","vowel team":"In 'team,' the e and a team up to make one long e sound.","silent e":"In 'these,' the last e is silent and makes the first e say its name.","spelling pattern":"ee and ea are two spelling patterns for long e."},
+  },
+  "3/unit1/long-i": {
+    examples: ["Same sound, different spellings:\nkite (i_e) · night (igh) · sky (y) · pie (ie)\nTip: igh and y can end a word, but igh keeps its t: night, light."],
+    vocab: {"long i":"The i in 'kite' and 'night' is a long i.","silent e":"In 'kite,' you don't hear the e, but it makes the i say its name.","silent letters":"The g and h in 'light' are silent letters.","spelling pattern":"igh is a spelling pattern for long i."},
+  },
+  "3/unit1/long-o": {
+    examples: ["Same sound, different spellings:\nhome (o_e) · boat (oa) · snow (ow) · toe (oe)\nTip: ow is for the END of a word, oa is for the MIDDLE."],
+    vocab: {"long o":"The o in 'boat' and 'snow' is a long o.","silent e":"In 'home,' you don't hear the e, but it makes the o say its name.","vowel team":"In 'boat,' the o and a team up to make one long o sound.","spelling pattern":"oa is a spelling pattern for long o."},
+  },
+  "3/unit1/long-u": {
+    examples: ["Same sound, different spellings:\ncute (u_e) · new (ew) · blue (ue) · fruit (ui)\nTip: ew and ue are for the END of a word."],
+    vocab: {"long u":"The u in 'cute' and the ue in 'blue' are long u sounds.","silent e":"In 'cute,' you don't hear the e, but it makes the u say its name.","vowel team":"In 'fruit,' the u and i team up to make one long u sound.","spelling pattern":"ew is a spelling pattern for long u."},
   },
   "3/unit1/soft-g-c": {
     examples: ["Hard or soft?\ngoat (g + o → hard)   giraffe (g + i → soft)\ncake (c + a → hard)   cereal (c + e → soft)"],
