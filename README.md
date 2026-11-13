@@ -91,3 +91,9 @@ Answer choices are shuffled automatically, so you can always list the correct an
 ## Note
 
 This is not an official CCPS resource. SOL codes are approximate. Unit order and emphasis vary by teacher, so check your child's pacing guide or Schoology/teacher materials for exactly what is being taught each quarter.
+
+## Grade 7 social studies and Health & PE
+
+- `data/grade7-social.js` adds eight sections to Civics & Economics (parties and media, foreign policy, landmark court cases, civil rights, geography and population, social studies skills, trade and the global economy, Virginia in the founding era).
+- `data/grade7-health.js` adds a **Health & PE** subject with nine sections (nutrition, fitness, healthy habits, mental health, substance safety, safety and first aid, relationships, movement and sports, wellness and decisions).
+- Bonus banks are in `data/bonus-g7-social*.js` and `data/bonus-g7-health*.js`. Each new section has 90–115 bonus questions.

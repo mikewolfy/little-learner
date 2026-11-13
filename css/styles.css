@@ -15,6 +15,7 @@
   --science: #15803d;
   --history: #9333ea;
   --unit1: #d97706;
+  --health: #e11d48;
   --reading: #0d9488;
   --gifted: #7c3aed;
   --gifted-soft: #f3edff;
@@ -40,6 +41,7 @@
     --science: #4ade80;
     --history: #c084fc;
     --unit1: #fbbf24;
+    --health: #fb7185;
     --reading: #2dd4bf;
     --gifted: #b69cff;
     --gifted-soft: #2a2140;
@@ -113,6 +115,7 @@ a.card:hover { transform: translateY(-2px); border-color: var(--accent); }
 .subject-science { --sub: var(--science); }
 .subject-history { --sub: var(--history); }
 .subject-unit1 { --sub: var(--unit1); }
+.subject-health { --sub: var(--health); }
 .focus { border: 2px solid var(--unit1); margin: 8px 0 18px; }
 .focus h2 { margin: 0.2em 0 0.1em; }
 .focus p { color: var(--muted); margin: 0; }

@@ -12,6 +12,7 @@ window.PROGRAMS = {
     vdoeMath: { label: "Virginia 2023 Mathematics SOL", url: "https://www.doe.virginia.gov/teaching-learning-assessment/instruction/mathematics/standards-of-learning-for-mathematics", note: "The state math standards for every grade." },
     vdoeEnglish: { label: "Virginia 2024 English SOL", url: "https://www.doe.virginia.gov/teaching-learning-assessment/k-12-standards-instruction/english-reading-literacy/standards-of-learning", note: "The state reading, writing, and language standards." },
     vdoeScience: { label: "Virginia Science SOL Resources", url: "https://www.doe.virginia.gov/teaching-learning-assessment/k-12-standards-instruction/science/instructional-resources", note: "The state science standards and resources." },
+    vdoeHealth: { label: "Virginia Health Education SOL", url: "https://www.doe.virginia.gov/teaching-learning-assessment/k-12-standards-instruction/health-education/standards-of-learning", note: "The state health education standards and curriculum framework. Physical education standards are on the same VDOE site." },
     vdoeHistory: { label: "Virginia 2023 History & Social Science SOL", url: "https://www.doe.virginia.gov/teaching-learning-assessment/k-12-standards-instruction/history-and-social-science/standards-of-learning", note: "The state history, geography, civics, and economics standards." },
   },
   // Which links appear on each subject page.
@@ -22,6 +23,7 @@ window.PROGRAMS = {
     reading: ["vdoeEnglish", "ccpsCurriculum"],
     science: ["vdoeScience", "ccpsCurriculum"],
     history: ["vdoeHistory", "ccpsCurriculum"],
+    health: ["vdoeHealth", "ccpsCurriculum"],
     advanced: ["ccpsGifted", "giftedPlan"],
   },
   gradeLinks: {
