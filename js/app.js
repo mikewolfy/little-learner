@@ -181,6 +181,7 @@
       </div>` : ""}
       <h2>For parents</h2>
       <div class="grid">
+        <a class="card" href="https://games.teach365.org" target="_blank" rel="noopener"><div class="big">🎮</div><h3>Teach365 Games ↗</h3><p>More learning games on another site.</p></a>
         <a class="card" href="#/programs"><div class="big">🧭</div><h3>Programs &amp; Tracks</h3><p>How CCPS gifted services work, and the standard, honors, and gifted course options for grades 6–8.</p></a>
         ${GRADES.map((g) => `<a class="card" href="#/vocab/${g}"><div class="big">📒</div><h3>Grade ${g} Vocabulary</h3><p>All ${vocabCount(g)} words with definitions and examples, plus vocabulary quizzes.</p></a>`).join("")}
       </div>
